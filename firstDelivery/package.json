@@ -2,10 +2,11 @@
   "name": "fighting_text_game",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Pau Serra Jensen & Vitor Satyro Vitturi",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {}
 }
