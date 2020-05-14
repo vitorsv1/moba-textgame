@@ -1,106 +1,92 @@
+#!/usr/bin/env node
 
-const http = require('http');
-const url = require('url');
-const path = require('path');
-const fs = require('fs');
-const express = require('express');
+/**
+ * Module dependencies.
+ */
 
-const root = __dirname;
+var app = require('./app');
+var debug = require('debug')('express-test:server');
+var http = require('http');
 
-var app = express();
 
-app.use(express.static('public'));
+/**
+ * Get port from environment and store in Express.
+ */
 
-// Maybe change to app router or just app for express use
-// The CSS and IMGs are not working in the champ-select page
+var port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
 
-const serverStatic = (response,file)=>{
-	const fileToServe = path.join(root,file);
-	const stream = fs.createReadStream(fileToServe);
+/**
+ * Create HTTP server.
+ */
 
-	console.log('serving...');
-	
-	stream.on('data',(chunk)=>{
-		console.log( 'read:' + chunk);
-		response.write(chunk);
-	});
-	stream.on('end',function(){
-		response.end();
-		console.log( 'done reading.');
-	});
-};
+var server = http.createServer(app);
 
-// ======================================
+/**
+ * Listen on provided port, on all network interfaces.
+ */
 
-let route = {
-	routes : {},
-	for: function(method,path,handler){
-		this.routes[method+path] = handler;
-	}
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
 }
 
+/**
+ * Event listener for HTTP server "error" event.
+ */
 
-route.for('GET','/', (request,response) =>{
-	console.log( 'serving a file');
-	serverStatic(response,'index.html');
-});
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
 
-route.for('GET','/char-select', (request,response) =>{
-	console.log( 'serving a file');
-	serverStatic(response,'char-select.html');
-});
+  var bind = typeof port === 'string'
+    ? 'Pipe ' + port
+    : 'Port ' + port;
 
-route.for('GET','/fight', (request,response) =>{
-	console.log( 'serving a file');
-	serverStatic(response,'fight.html');
-});
-
-route.for('GET','/characterStats', (request,response) =>{
-	console.log( 'serving a file');
-	serverStatic(response,'characterStats.json');
-});
-
-/*
-route.for('GET','/start', (request,response)=>{
-	response.writeHead(200,{'Content-Type':'text/plain'});
-	response.write('Hello');
-	response.end();	
-});
-
-route.for('GET','/finish', (request,response)=>{
-	response.writeHead(200,{'Content-Type':'text/plain'});
-	response.write('Goodbye');
-	response.end();	
-});
-
-route.for('POST','/echo', (request,response)=>{
-	let incoming = "";
-	
-	request.on('data',(chunk)=>{
-		incoming += chunk.toString();
-	});
-	
-	request.on('end',()=>{
-		response.writeHead(200,{'Content-Type':'text/plain'});
-		response.write(incoming);
-		response.end();	
-	});
-});
-*/
-// ======================================
-
-const onRequest = (request,response)=>{
-	let pathname = url.parse(request.url).pathname;
-	console.log(`Request for ${request.method} - ${pathname} received.`);
-
-	// a switch statement
-	if (typeof route.routes[request.method+pathname] === 'function'){
-		route.routes[request.method+pathname](request,response);
-	} else {
-		response.writeHead(200,{'Content-Type':'text/plain'});
-		response.end('Four-O-Four NOT FOUND :P'); // is like write+end
-	}
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
 }
 
-http.createServer( onRequest ).listen(9999);
-console.log('Server has started...');
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+  var addr = server.address();
+  var bind = typeof addr === 'string'
+    ? 'pipe ' + addr
+    : 'port ' + addr.port;
+  debug('Listening on ' + bind);
+}
+

@@ -1,3 +1,5 @@
-{"name":"fighter","hp":100,"attack":8,"ability1CD":3,"ability2CD":5}
-{"name":"mage","hp":70,"attack":4,"ability1CD":2,"ability2CD":3}
-{"name":"tank","hp":150,"attack":5,"ability1CD":3,"ability2CD":5}
+{
+  "character1": {"name":"fighter","hp":100,"attack":8,"ability1CD":3,"ability2CD":5},
+  "character2" : {"name":"mage","hp":70,"attack":4,"ability1CD":2,"ability2CD":3},
+  "character3" : {"name":"tank","hp":150,"attack":5,"ability1CD":3,"ability2CD":5}
+}
