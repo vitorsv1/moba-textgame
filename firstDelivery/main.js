@@ -31,14 +31,15 @@ let route = {
 	}
 }
 
+
 route.for('GET','/', (request,response) =>{
 	console.log( 'serving a file');
 	serverStatic(response,'index.html');
 });
 
-route.for('GET','/profile', (request,response) =>{
+route.for('GET','/char-select', (request,response) =>{
 	console.log( 'serving a file');
-	serverStatic(response,'profile.html');
+	serverStatic(response,'char-select.html');
 });
 
 route.for('GET','/fight', (request,response) =>{
