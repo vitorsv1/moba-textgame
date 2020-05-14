@@ -3,8 +3,16 @@ const http = require('http');
 const url = require('url');
 const path = require('path');
 const fs = require('fs');
+const express = require('express');
 
 const root = __dirname;
+
+var app = express();
+
+app.use(express.static('public'));
+
+// Maybe change to app router or just app for express use
+// The CSS and IMGs are not working in the champ-select page
 
 const serverStatic = (response,file)=>{
 	const fileToServe = path.join(root,file);
