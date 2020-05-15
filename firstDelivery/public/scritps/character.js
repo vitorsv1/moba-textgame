@@ -174,69 +174,14 @@ class Fight{
 	}
 }
 //////MODULE EXPORTS/////////
+
+exports.Fighter = Fighter;
+exports.Mage = Mage;
+exports.Ranger = Ranger;
+exports.Fight = Fight;
 exports.createCharacter = createCharacter;
 // createCharacter(CharTypeConstructor, name, hp, attack, cd1,cd2)
 //						¨^               ^
 //	class constructor of its character//rest of stats from json file
 //
-exports.Fighter = Fighter;
-exports.Mage = Mage;
-exports.Ranger = Ranger;
-exports.Fight = Fight;
 //
-
-///////////tests begin/////
-/*
-let rlSync = require('readline-sync');
-console.log("--------begin test");
-
-
-mage3 = new Mage("mageClass", 15, 2, 2,3);
-fighter = new Fighter("fighter", 20,5, 2,3);
-ranger = new Ranger("Ranger", 10, 10, 2,3);
-game = new Fight(mage3,fighter);
-
-while (true) {
-	let command = rlSync.question("next turn: ");
-	game.progress(command);
-	console.log(game.getFightStatus());
-}
-console.log("WTF");
-*/
-
-//-----------------------------------------
-/*function inital(target){
-	target.hp -= 10;
-};
-
-function poison(target){
-	target.hp -= 2;
-}
-modifier1 = new Modifier(0,inital);
-modifieer2 = new Modifier(2, function (target) {}, poison);
-ability1 = new Ability(4, modifier1,"", 1);
-ability2 = new Ability(2, modifieer2, "",1);
-mage = new Characther("mage",100,2,ability1,ability2);
-mage2 = new Characther("mage2",100,2,ability1,ability2);
-mage3 = new Mage("mageClass", 10, 2, 2,3);
-mage3.doAbility1(mage);
-
-
-printFightStatus(mage,mage2);
-console.log("------begin fight");
-mage.doAttack(mage2);
-mage2.doAbility2(mage);
-printFightStatus(mage,mage2);
-mage.turnPass();
-mage2.turnPass();
-console.log("---next turn 1");
-printFightStatus(mage,mage2);
-mage.turnPass();
-mage2.turnPass();
-console.log("---next turn 2");
-printFightStatus(mage,mage2);
-mage.turnPass();
-mage2.turnPass();
-console.log("---next turn 3");
-printFightStatus(mage,mage2);
-*/

@@ -55,6 +55,8 @@ app.get('/fight',  function(req, res, next) {
 	res.sendFile(path.join(__dirname, 'fight.html'));
 });
 
+app.get('/characther')
+
 
 
 
