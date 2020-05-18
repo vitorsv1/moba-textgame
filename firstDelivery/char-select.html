@@ -1,37 +1,61 @@
 <!DOCTYPE html>
 <html>
-  <head>
-      <title> RPG Fight</title>
-      <meta name="description" content="Welcome to RPG Fight Online game, a Text based game for use NodeJS features">
-      <link rel="stylesheet" type="text/css" href="/css/style.css">        
-      <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-  </head>
-  <body>
- 
-    <!--Someway to import INDEX.HTML-->
-    Choose your char below
-    <div class="row">
-      <form action="/fight" method="post">
-      <div class="column">
-        <label>
-          <input type="radio" name="char" value="archer" checked>
-          <img src="/img/archer.jpg" alt="Archer" width="300" height="200">
-        </label>
-      </div>
-        <div class="column">
-          <label>
-            <input type="radio" name="char" value="warrior" checked>
-            <img src="/img/warrior.jpg" alt="Warrior" width="300" height="200">
-          </label>
-        </div>
-        <div class="column">
-          <label>
-            <input type="radio" name="char" value="mage" checked>
-            <img src="/img/mage.jpg" alt="Mage" width="300" height="200">
-          </label>
-        </div>
-        <input type="submit" value="Confirm">
-      </form>
-    </div>
+    <head>
+        <title> RPG Fight</title>
+        <meta name="description" content="Welcome to RPG Fight Online game, a Text based game for use NodeJS features">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <link rel="stylesheet" type="text/css" href="/css/style.css">
+    </head>
+    <body>
+      <!-- HEADER -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <a class="navbar-brand text-white">RPG Fight</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+              <div class="navbar-nav">
+                <a class="nav-item nav-link" href="./">Home</a>
+                <a class="nav-item nav-link active" href="./char-select">Char Select</a>
+                <a class="nav-item nav-link" href="./fight">Fight</a>
+              </div>
+            </div>
+        </nav>
+        <!-- TEXT AFTER HEADER -->
+        <br>
+        <h1 class="display-4 text-center">Choose your char below</h1>
+        <br>
+        <!-- FORM FOR CHAR -->
+        <form action="/fight" method="post">
+          <div class="container">
+            <div class="row">
+              <div class="col">
+                <label>
+                  <input type="radio" name="char" value="archer" checked>
+                  <img src="/img/archer.jpg" alt="Archer" width="300" height="200">
+                </label>
+              </div>
+                <div class="col">
+                  <label>
+                    <input type="radio" name="char" value="warrior" checked>
+                    <img src="/img/warrior.jpg" alt="Warrior" width="300" height="200">
+                  </label>
+                </div>
+                <div class="col">
+                  <label>
+                    <input type="radio" name="char" value="mage" checked>
+                    <img src="/img/mage.jpg" alt="Mage" width="300" height="200">
+                  </label>
+                </div>
+            </div>
+            <br>
+            <div class="row">
+              <div class="col text-center">
+                <button type="submit" class="btn btn-secondary">Confirm</button>
+              </div>
+            </div>
+          </div>
+        </form>
+        <!-- SCRIPTS -->
   </body>
 </html>
