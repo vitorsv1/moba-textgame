@@ -88,7 +88,7 @@ class Characther{
 		return this.hp <= 0;
 	}
 
-	describe(){
+		describe(){
 		return this.description + '\n Ability 1: ' + this.ability1.description + '\n Ability 2: ' + this.ability2.description;
 	}
 
