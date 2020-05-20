@@ -56,31 +56,27 @@ function send_msg() {
     }
 }
 
-//SOME NICE FAST SEND KEYS AND EXIT
-function box_key_pressing() {
-    // control + enter was pressed
-    if ((event.keyCode === 10 || event.keyCode === 13) && event.ctrlKey) {
-        send_msg();
-    }
-    // esc was pressed
-    if (event.keyCode === 27) {
-        input_box.blur();
-    }
-}
-
-//send_button.on('click', send_msg.bind());
-input_box.on('keyup', box_key_pressing.bind());
 
 
 console.log("FIGHT TEST");
 
-mage = new createCharacter(Mage, "Mage", 15, 2, 2,3,"Magic are powerfull in this char");
-fighter = new createCharacter(Fighter, "Fighter", 20,5, 2,3, "Basic attacks it's his strong ability");
-ranger = new createCharacter(Ranger, "Ranger", 10, 10, 2,3, "Attacks and magics can be great");
+//load charachters' stats from json file
+$.getJSON('./characterStats.json', function (data) {
+    ranger = new createCharacter(Ranger, data.character1.name, data.character1.hp,data.character1.attack, data.character1.ability1CD, data.character1.ability2CD,data.character1.description);
+    mage = new createCharacter(Mage, data.character2.name, data.character2.hp,data.character2.attack, data.character2.ability1CD, data.character2.ability2CD,data.character2.description);
+    fighter = new createCharacter(Fighter, data.character3.name, data.character3.hp,data.character3.attack, data.character3.ability1CD, data.character3.ability2CD,data.character3.description);
+    const urlParams = new URLSearchParams(window.location.search);
+    let char1;
+    switch (urlParams.get('char1')) {
+        case 'archer': char1 = ranger; break;
+        case 'figther': char1 = fighter; break;
+        case 'mage': char1 = mage; break;
+        default: throw "wrong char1 parameter: "+ urlParams;
+    }
+    game = new Fight(char1,fighter);
 
-game = new Fight(mage,fighter);
-
-console.log(mage.describe());
+    console.log(char1.describe());
+});
 
 var chat = new chat_control();
 chat.receive_msg('FIGHT', 'Fight Starts');
@@ -88,8 +84,7 @@ chat.receive_msg('FIGHT', 'Fight Starts');
 var input = document.getElementById("send-btn");
 console.log(input);
 
-
-input.addEventListener('click', function(){
+function chatEventHandler(){
 
     if (input_box.val() != ''){
         let command = handle_msg(input_box.val());
@@ -98,6 +93,26 @@ input.addEventListener('click', function(){
         chat.send_msg(game.getUserCharName(), game.getUserStats());
         chat.receive_msg(game.getEnemyCharName(),game.getEnemyStats());
         console.log(game.getFightStats());
-}}, false);
+    }}
 
-console.log("WTF");
+input.addEventListener('click', chatEventHandler, false);
+
+//send_button.on('click', send_msg.bind());
+input_box.on('keyup', box_key_pressing.bind());
+
+//SOME NICE FAST SEND KEYS AND EXIT
+function box_key_pressing() {
+    // control + enter was pressed
+    if ((event.keyCode === 10 || event.keyCode === 13) && event.ctrlKey) {
+        chatEventHandler();
+    }
+    // esc was pressed
+    if (event.keyCode === 27) {
+        input_box.blur();
+    }
+}
+
+
+console.log("DONE LOADING");
+
+ /**/

@@ -55,7 +55,10 @@ app.get('/fight',  function(req, res, next) {
 	res.sendFile(path.join(__dirname, 'fight.html'));
 });
 
-app.get('/characther')
+app.get('/characterStats.json',  function(req, res, next) {
+	console.log( 'serving a fight');
+	res.sendFile(path.join(__dirname, 'characterStats.json'));
+});
 
 
 
