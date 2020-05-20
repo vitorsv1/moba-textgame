@@ -127,7 +127,7 @@ class Fighter extends Characther{
 	constructor(name, hp, attack, cd1, cd2,description) {
 		super(name,hp,attack,null, null,description);
 		this.ability1 = new Ability(cd1, new Modifier(2,function (target) {target.hp += target.hp;},EMPTY, function (target) {target.hp -= target.hp/2;}),"Double your hp for the next 2 turns",0);
-		this.ability2 = new Ability(cd2, new Modifier(5,function (target) {target.attack -= target.hp/2;},EMPTY, function (target) {target.attack += target.attack;}),"Half enemy's attack damage for the next 5 turns",1);
+		this.ability2 = new Ability(cd2, new Modifier(5,function (target) {target.attack -= target.attack/2;},EMPTY, function (target) {target.attack += target.attack;}),"Half enemy's attack damage for the next 5 turns",1);
 	}
 }
 //Ranger character
@@ -135,7 +135,7 @@ class Fighter extends Characther{
 class Ranger extends Characther{
 	constructor(name, hp, attack, cd1, cd2,description) {
 		super(name,hp,attack,null, null,description);
-		this.ability1 = new Ability(cd1, new Modifier(5,function (target) {target.attack += target.hp/2;},EMPTY, function (target) {target.attack -= target.attack;}),"Double your hp for the next 2 turns",0);
+		this.ability1 = new Ability(cd1, new Modifier(5,function (target) {target.attack += target.attack/2;},EMPTY, function (target) {target.attack -= target.attack/3;}),"Increase your attack by 50%",0);
 		this.ability2 = new Ability(cd2, new Modifier(0,function (target) {target.hp += 7;},EMPTY, EMPTY),"Heal for 7 hp",0);
 	}
 }

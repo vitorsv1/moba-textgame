@@ -69,7 +69,7 @@ $.getJSON('./characterStats.json', function (data) {
     let char1;
     switch (urlParams.get('char1')) {
         case 'archer': char1 = ranger; break;
-        case 'figther': char1 = fighter; break;
+        case 'warrior': char1 = fighter; break;
         case 'mage': char1 = mage; break;
         default: throw "wrong char1 parameter: "+ urlParams;
     }
@@ -89,7 +89,22 @@ function chatEventHandler(){
     if (input_box.val() != ''){
         let command = handle_msg(input_box.val());
         chat.send_msg(game.getUserCharName(), command);
-        game.progress(command);
+        try{
+            game.progress(command);
+
+        }catch (e) {
+            if(window.localStorage.getItem('wins')==null) window.localStorage.setItem('wins', '0');
+            if(window.localStorage.getItem('losses')==null) window.localStorage.setItem('losses', '0');
+            if(e == 'player 1 won') {
+                alert('You win!!!');
+                window.localStorage.setItem('wins', (parseInt(window.localStorage.getItem('wins'))+1).toString());
+            }
+            else  if (e =='player 2 won') {
+                alert('You lost :(');
+                window.localStorage.setItem('losses', (parseInt(window.localStorage.getItem('losses'))+1).toString());
+            }
+            else alert(e);
+        }
         chat.send_msg(game.getUserCharName(), game.getUserStats());
         chat.receive_msg(game.getEnemyCharName(),game.getEnemyStats());
         console.log(game.getFightStats());
