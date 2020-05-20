@@ -10,7 +10,7 @@ class Ability {
 	}
 
 	useAbility(target){
-		if(this.currentCd != 0 ) throw "ability on cooldwon!!!"
+		if(this.currentCd != 0 ) throw "ability on cooldown!!!"
 		this.currentCd = this.cd;
 		target.recieve(this.modifier.clone());
 	}
@@ -81,7 +81,7 @@ class Characther{
 	}
 
 	getStats(){
-		return "name: " + this.name + ", hp: " + this.hp + ", attack: " + this.attack + ", Ability1 Cooldown: " + this.ability1.currentCd + ", Ability2 Cooldown: " + this.ability2.currentCd;
+		return "HP: " + this.hp + ", Attack: " + this.attack + ", Ability1 Cooldown: " + this.ability1.currentCd + ", Ability2 Cooldown: " + this.ability2.currentCd;
 	}
 
 	isDead(){
@@ -169,17 +169,33 @@ class Fight{
 		if(this.char2.isDead()) throw "player 1 won";
 	}
 
-	getFightStatus(){
+	getFightStats(){
 		return this.char1.getStats() + "\n" + this.char2.getStats();
+	}
+
+	getUserCharName(){
+		return this.char1.name;
+	}
+
+	getEnemyCharName(){
+		return this.char2.name;
+	}
+
+	getUserStats(){
+		return this.char1.getStats();
+	}
+
+	getEnemyStats(){
+		return this.char2.getStats();
 	}
 }
 //////MODULE EXPORTS/////////
 
-exports.Fighter = Fighter;
-exports.Mage = Mage;
-exports.Ranger = Ranger;
-exports.Fight = Fight;
-exports.createCharacter = createCharacter;
+// exports.Fighter = Fighter;
+// exports.Mage = Mage;
+// exports.Ranger = Ranger;
+// exports.Fight = Fight;
+// exports.createCharacter = createCharacter;
 // createCharacter(CharTypeConstructor, name, hp, attack, cd1,cd2)
 //						¨^               ^
 //	class constructor of its character//rest of stats from json file

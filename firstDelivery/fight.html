@@ -25,58 +25,19 @@
         <!-- CHAT -->
         <div class="container-flude">
             <div class="msg-group center">
-
-                <div class="card">
-                     <div class="card-body">
-                         <h6 class="card-subtitle mb-2 text-muted text-left">CHAR</h6>
-                         <p class="card-text float-left">TEXT FROM SERVER</p>
-                     </div>
+                <div class="input-group">
+                    <textarea id="input-box" class="form-control" rows="1" placeholder="Say your command..."></textarea>
+                    <span class="input-group-btn">
+                        <button id="send-btn" class="btn btn-secondary" type="button">Send</button>
+                    </span>
                 </div>
-                  
-                <div class="card">
-                     <div class="card-body">
-                         <h6 class="card-subtitle mb-2 text-muted text-right">CHAR</h6>
-                         <p class="card-text float-right">TEXT FROM SERVER</p>
-                     </div>
-                </div> 
-
-                <div class="container-flude">
-                    <div class="msg-group center">
-                        <div class="card">
-                             <div class="card-body">
-                                 <h6 class="card-subtitle mb-2 text-muted text-left">CHAR</h6>
-                                 <p class="card-text float-left">TEXT FROM SERVER</p>
-                             </div>
-                        </div>
-                        <div class="card">
-                             <div class="card-body">
-                                 <h6 class="card-subtitle mb-2 text-muted text-right">CHAR</h6>
-                                 <p class="card-text float-right">TEXT FROM SERVER</p>
-                             </div>
-                        </div>          
-                    </div>
-
-                    <div class="input-group">
-                        <textarea id="input-box" class="form-control" rows="1" placeholder="Say something..."></textarea>
-                        <span class="input-group-btn">
-                            <button class="btn btn-secondary" type="button">Send</button>
-                        </span>
-                    </div>
-                </div>
-            </div>
-            <br>
-            <!-- Other Window -->
-            <div class="input-group">
-                <textarea id="input-box" class="form-control" rows="1" placeholder="Say something..."></textarea>
-                <span class="input-group-btn">
-                    <button class="btn btn-secondary" type="button">send</button>
-                </span>
             </div>
         </div>
         <!-- SCRIPTS -->
         <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
         <script src="https://unpkg.com/@popperjs/core@2"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
-        <script src="/scripts/chat-control.js"></script>
+        <script src="/scripts/character.js" ></script>
+        <script src="/scripts/chat-control.js" ></script>
     </body>
 </html>

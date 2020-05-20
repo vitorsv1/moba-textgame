@@ -35,8 +35,6 @@ class chat_control {
 }
 
 
-var chat = new chat_control();
-chat.receive_msg('CHAR', 'MESSAGE RECEIVED');
 
 send_button = $('button') // get jquery element from html table name
 input_box = $('#input-box') // get jquery element from div id
@@ -52,11 +50,9 @@ function handle_msg(msg) {
 function send_msg() {
     msg = handle_msg(input_box.val());
     if (msg != '') {
-        chat.send_msg('you', msg);
+        chat.send_msg('USER', msg);
         input_box.val('');
-
-        setTimeout(function(){ chat.receive_msg('CHAR', 'MESSAGE SENT'); }, 1000);
-        MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+        return msg
     }
 }
 
@@ -72,5 +68,36 @@ function box_key_pressing() {
     }
 }
 
-send_button.on('click', send_msg.bind());
+//send_button.on('click', send_msg.bind());
 input_box.on('keyup', box_key_pressing.bind());
+
+
+console.log("FIGHT TEST");
+
+mage = new createCharacter(Mage, "Mage", 15, 2, 2,3,"Magic are powerfull in this char");
+fighter = new createCharacter(Fighter, "Fighter", 20,5, 2,3, "Basic attacks it's his strong ability");
+ranger = new createCharacter(Ranger, "Ranger", 10, 10, 2,3, "Attacks and magics can be great");
+
+game = new Fight(mage,fighter);
+
+console.log(mage.describe());
+
+var chat = new chat_control();
+chat.receive_msg('FIGHT', 'Fight Starts');
+
+var input = document.getElementById("send-btn");
+console.log(input);
+
+
+input.addEventListener('click', function(){
+
+    if (input_box.val() != ''){
+        let command = handle_msg(input_box.val());
+        chat.send_msg(game.getUserCharName(), command);
+        game.progress(command);
+        chat.send_msg(game.getUserCharName(), game.getUserStats());
+        chat.receive_msg(game.getEnemyCharName(),game.getEnemyStats());
+        console.log(game.getFightStats());
+}}, false);
+
+console.log("WTF");
