@@ -62,9 +62,11 @@ console.log("FIGHT TEST");
 
 //load charachters' stats from json file
 $.getJSON('./characterStats.json', function (data) {
-    ranger = new createCharacter(Ranger, data.character1.name, data.character1.hp,data.character1.attack, data.character1.ability1CD, data.character1.ability2CD,data.character1.description);
-    mage = new createCharacter(Mage, data.character2.name, data.character2.hp,data.character2.attack, data.character2.ability1CD, data.character2.ability2CD,data.character2.description);
-    fighter = new createCharacter(Fighter, data.character3.name, data.character3.hp,data.character3.attack, data.character3.ability1CD, data.character3.ability2CD,data.character3.description);
+    if(window.localStorage.getItem('trophy')==null) window.localStorage.setItem('trophy', '0');
+    trophy = parseInt(window.localStorage.getItem('trophy'));
+    ranger = new createCharacter(Ranger, data.character1.name, data.character1.hp + trophy*3,data.character1.attack + trophy*2, data.character1.ability1CD, data.character1.ability2CD,data.character1.description);
+    mage = new createCharacter(Mage, data.character2.name, data.character2.hp + trophy*3,data.character2.attack + trophy*2, data.character2.ability1CD, data.character2.ability2CD,data.character2.description);
+    fighter = new createCharacter(Fighter, data.character3.name, data.character3.hp + trophy*3,data.character3.attack + trophy*2, data.character3.ability1CD, data.character3.ability2CD,data.character3.description);
     const urlParams = new URLSearchParams(window.location.search);
     let char1;
     switch (urlParams.get('char1')) {
@@ -79,10 +81,13 @@ $.getJSON('./characterStats.json', function (data) {
 });
 
 var chat = new chat_control();
-chat.receive_msg('FIGHT', 'Fight Starts');
+chat.receive_msg('FIGHT', 'The Fight has been started!! Good luck my friend');
 
 var input = document.getElementById("send-btn");
-console.log(input);
+
+var audio = document.getElementById("audio");
+audio.volume = 0.1;
+
 
 function chatEventHandler(){
 
@@ -95,13 +100,20 @@ function chatEventHandler(){
         }catch (e) {
             if(window.localStorage.getItem('wins')==null) window.localStorage.setItem('wins', '0');
             if(window.localStorage.getItem('losses')==null) window.localStorage.setItem('losses', '0');
+            if(window.localStorage.getItem('trophy')==null) window.localStorage.setItem('trophy', '0');
             if(e == 'player 1 won') {
                 alert('You win!!!');
                 window.localStorage.setItem('wins', (parseInt(window.localStorage.getItem('wins'))+1).toString());
+                window.localStorage.setItem('trophy', (parseInt(window.localStorage.getItem('trophy'))+1).toString());
             }
             else  if (e =='player 2 won') {
                 alert('You lost :(');
                 window.localStorage.setItem('losses', (parseInt(window.localStorage.getItem('losses'))+1).toString());
+                
+                let trophy = parseInt(window.localStorage.getItem('trophy'))-1;
+                if(trophy <= 0) trophy=0;
+
+                window.localStorage.setItem('trophy', trophy.toString());
             }
             else alert(e);
         }

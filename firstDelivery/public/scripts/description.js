@@ -1,5 +1,9 @@
 console.log('Description');
 
+var audio = document.getElementById("audio");
+audio.volume = 0.1;
+
+
 $.getJSON('./characterStats.json', function (data) {
     // ranger = new createCharacter(Ranger, data.character1.name, data.character1.hp,data.character1.attack, data.character1.ability1CD, data.character1.ability2CD,data.character1.description);
     // mage = new createCharacter(Mage, data.character2.name, data.character2.hp,data.character2.attack, data.character2.ability1CD, data.character2.ability2CD,data.character2.description);
