@@ -98,6 +98,22 @@ app.post('/login',(req,res)=>{
 	database.findUser(sess.username, checkUser);
 });
 
+app.post('/register',(req,res)=>{
+	let sess=req.session;
+	// We assign username and password to sess.username and sess.pswd variables.
+	// The data comes from the submitted HTML page.
+	sess.username=req.body.username;
+	sess.pswd=req.body.pass;
+	console.log('User submitted this data:',sess);
+
+	// validate the user and password here ... TO DO ... use mongoDB
+	function checkUser(users){
+		if(users[0] && users.username == sess.username && users.password == sess.password)console.log('tried to register an existing user');
+		else database.insertUser(sess.username, sess.pswd, res.redirect('./'));
+	}
+	database.findUser(sess.username, checkUser);
+});
+
 app.get('/logout',(req,res)=>{
 	req.session.destroy(function(err){
 		if(err){

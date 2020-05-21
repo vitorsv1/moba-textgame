@@ -145,10 +145,11 @@ class Ranger extends Characther{
 //--------------------------------------------------------------
 
 class Fight{
-	constructor(char1,char2){
+	constructor(char1,char2,turn){
 		this.char1 = char1;
 		this.char2 = char2;
-		this.turn = 1;
+		if(turn == undefined)this.turn = 1;
+		else this.turn = turn;
 	}
 
 	progress(command){
@@ -188,6 +189,7 @@ class Fight{
 	getEnemyStats(){
 		return this.char2.getStats();
 	}
+
 }
 //////MODULE EXPORTS/////////
 

@@ -1,6 +1,9 @@
-const usersCollection = 'users';
 var db = null;
+
 // --------user managment---------
+
+const usersCollection = 'users';
+
 export const findUser = function(user,callback) {
     const collection = db.collection(usersCollection);
     collection.find({username:user}).toArray(function(err, users) {
@@ -46,6 +49,41 @@ export const increaseUserlosses(user,callback){
             callback(result);
         });
 }
+
+//--------matches management------------
+
+const matchesCollection = 'matches';
+
+export const findMatch = function(matchId,callback) {
+    const collection = db.collection(matchesCollection);
+    collection.findOne({_id:matchId}).toArray(function(err, matches) {
+        assert.equal(err, null);
+        console.log("Found the following matches with same id:);
+        console.log(matches);
+        callback(matches);
+    });
+}
+
+export const insertMatch = function(fight, callback) {
+    const collection = db.collection(matchesCollection);
+    collection.insertOne({username: user, password: pass,  wins:0, losses:0, match: null}
+        , function(err, response) {
+            assert.equal(err, null);
+            assert.equal(1, response.result.n);
+            assert.equal(1, response.ops.length);
+            console.log("Created new user");
+            callback(response);
+        });
+}
+
+
+
+
+
+
+
+//-----------------------------------------
+
 
 const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
