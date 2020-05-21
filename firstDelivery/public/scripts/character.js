@@ -148,7 +148,7 @@ class Fight{
 	constructor(char1,char2){
 		this.char1 = char1;
 		this.char2 = char2;
-		this.turn = 0;
+		this.turn = 1;
 	}
 
 	progress(command){

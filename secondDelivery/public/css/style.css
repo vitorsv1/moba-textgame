@@ -1,0 +1,68 @@
+
+/* HIDE RADIO */
+[type=radio] { 
+position: absolute;
+opacity: 0;
+width: 0;
+height: 0;
+}
+
+/* IMAGE STYLES */
+[type=radio] + img {
+cursor: pointer;
+}
+
+/* CHECKED STYLES */
+[type=radio]:checked + img {
+outline: 2px solid #f00;
+}
+
+/* Chat chat-messages */
+.chat-message {
+border: 2px solid #fafafa;
+background-color: #f1f1f1;
+border-radius: 5px;
+padding: 10px;
+margin: 10px 0;
+}
+  
+/* Darker chat chat-message */
+.darker {
+border-color: #ccc;
+background-color: #ddd;
+}
+
+/* Clear floats */
+.chat-message::after {
+content: "";
+clear: both;
+display: table;
+}
+
+/* Style images */
+.chat-message img {
+float: left;
+max-width: 60px;
+width: 100%;
+margin-right: 20px;
+border-radius: 50%;
+}
+
+/* Style the right image */
+.chat-message img.right {
+float: right;
+margin-left: 20px;
+margin-right:0;
+}
+
+/* Style time text */
+.time-right {
+float: right;
+color: #aaa;
+}
+
+/* Style time text */
+.time-left {
+float: left;
+color: #999;
+}
