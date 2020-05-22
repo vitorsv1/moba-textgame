@@ -4,7 +4,7 @@ var db = null;
 
 const usersCollection = 'users';
 
-export const findUser = function(user,callback) {
+function findUser(user,callback) {
     const collection = db.collection(usersCollection);
     collection.find({username:user}).toArray(function(err, users) {
         assert.equal(err, null);
@@ -14,7 +14,7 @@ export const findUser = function(user,callback) {
     });
 }
 
-export const insertUser = function(user, pass, callback) {
+function insertUser(user, pass, callback) {
     const collection = db.collection(usersCollection);
     collection.insertOne({username: user, password: pass,  wins:0, losses:0, match: null}
     , function(err, response) {
@@ -26,7 +26,7 @@ export const insertUser = function(user, pass, callback) {
     });
 }
 
-export const increaseUserWins(user,callback){
+function increaseUserWins(user,callback){
     const collection = db.collection(usersCollection);
     // Update document where a is 2, set b equal to 1
     collection.updateOne({ username: user }
@@ -38,7 +38,7 @@ export const increaseUserWins(user,callback){
         });
 }
 
-export const increaseUserlosses(user,callback){
+function increaseUserlosses(user,callback){
     const collection = db.collection(usersCollection);
     // Update document where a is 2, set b equal to 1
     collection.updateOne({ username: user }
@@ -54,17 +54,17 @@ export const increaseUserlosses(user,callback){
 
 const matchesCollection = 'matches';
 
-export const findMatch = function(matchId,callback) {
+function findMatch(matchId,callback) {
     const collection = db.collection(matchesCollection);
     collection.findOne({_id:matchId}).toArray(function(err, matches) {
         assert.equal(err, null);
-        console.log("Found the following matches with same id:);
+        console.log("Found the following matches with same id: ");
         console.log(matches);
         callback(matches);
     });
 }
 
-export const insertMatch = function(fight, callback) {
+function insertMatch(fight, callback) {
     const collection = db.collection(matchesCollection);
     collection.insertOne({username: user, password: pass,  wins:0, losses:0, match: null}
         , function(err, response) {
@@ -75,8 +75,6 @@ export const insertMatch = function(fight, callback) {
             callback(response);
         });
 }
-
-
 
 
 
@@ -115,5 +113,10 @@ function continueExec() {
 }
 continueExec();
 */
+
+
+//----MODULE EXPORTS-----
+exports.findUser = findUser;
+exports.insertUser = insertUser;
 
 
