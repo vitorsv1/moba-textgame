@@ -145,11 +145,13 @@ class Ranger extends Characther{
 //--------------------------------------------------------------
 
 class Fight{
-	constructor(char1,char2,turn){
+	constructor(char1,char2,turn, finnished){
 		this.char1 = char1;
 		this.char2 = char2;
 		if(turn == undefined)this.turn = 1;
 		else this.turn = turn;
+		if(finnished == undefined)this.finnished = 0;
+		else this.finnished = finnished;
 	}
 
 	progress(command){

@@ -1,6 +1,4 @@
 $(document).ready(()=>{
-    console.log('hi');
-
     let email,pass;
     $('#submit').click(function(){
         myEmail = $('#email').val();

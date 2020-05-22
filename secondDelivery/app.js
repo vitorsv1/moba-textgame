@@ -49,11 +49,10 @@ app.use(function(req, res, next) {
 //express public files
 app.use(express.static(path.join(__dirname, 'public')));
 
-//pages that dont require beeing  logged in---------------
+//------pages that dont require beeing  logged in ---------------
 //login page
 app.get('/login',(req,res)=>{
-//	let sess=req.session;
-	if(req.session.username) res.redirect(301,'/');
+	if(req.session.username) res.redirect('/');
 	console.log( 'serving a login');
 	res.sendFile(path.join(__dirname, 'login.html'));
 });
@@ -63,7 +62,6 @@ app.get('/register',(req,res)=>{
 	res.sendFile(path.join(__dirname, 'register.html'));
 });
 
-////pages that dont require beeing  logged in----END
 
 //check session
  app.use(function(req, res, next) {
@@ -72,7 +70,7 @@ app.get('/register',(req,res)=>{
  	else next();
  });
 
-
+// standard routing
 app.get('/',  function(req, res, next) {
 	console.log( 'serving a index');
 	res.sendFile(path.join(__dirname, 'index.html'));
@@ -96,34 +94,29 @@ app.get('/characterStats.json',  function(req, res, next) {
 
 app.post('/login',(req,res)=>{
 	let sess=req.session;
-	// We assign username and password to sess.username and sess.pswd variables.
-	// The data comes from the submitted HTML page.
 	sess.username=req.body.email;
 	sess.pswd=req.body.pass;
 	console.log('User submitted this data:',sess);
 
-	// validate the user and password here ... TO DO ... use mongoDB
+	// validate the user and password with mongoDB
 	function checkUser(users){
 		console.log("Checking valid user?")
 		if(users[0] && users[0].username == sess.username && users[0].password == sess.pswd) {res.send('EverythingOK')}
-		else console.log("loging failed, dunno what else to do ");
+		else res.send('You are a failure');
 	}
 	database.findUser(sess.username, checkUser);
 });
 
 app.post('/register',(req,res)=>{
 	let sess=req.session;
-	// We assign username and password to sess.username and sess.pswd variables.
-	// The data comes from the submitted HTML page.
 	sess.username=req.body.email;
 	sess.pswd=req.body.pass;
 	console.log('User submitted this data:',sess);
-
-	// validate the user and password here ... TO DO ... use mongoDB
+	// make sure user doesnt exist already, should send an error msg but nope
 	function checkUser(users){
-		if(users[0] && users.username == sess.username && users.password == sess.password)console.log('tried to register an existing user');
+		if(users[0])console.log('tried to register an existing user');
 		else database.insertUser(sess.username, sess.pswd, function (response){
-			if(response.result.ok)res.redirect('./');
+			if(response.result.ok)res.send('everythingOK');
 			else console.log("error on inserting user :(");
 		});
 	}
@@ -140,11 +133,6 @@ app.get('/logout',(req,res)=>{
 	});
 });
 
-
-//print info on requests
-app.use(function(req, res) {
-	res.write('Error 404, page not found');
-});
 
 
 module.exports = app;

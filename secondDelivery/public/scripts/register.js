@@ -15,9 +15,8 @@ $(document).ready(()=>{
         $.post("http://localhost:3000/register",
                 {email:myEmail,pass:myPass},
                 (data)=>{
-                    alert( data );
                     if(data==='everythingOK'){
-                        window.location.href="/admin";
+                        window.location.href="/";
                     }
         });
 

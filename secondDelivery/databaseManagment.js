@@ -28,7 +28,6 @@ function insertUser(user, pass, callback) {
 
 function increaseUserWins(user,callback){
     const collection = db.collection(usersCollection);
-    // Update document where a is 2, set b equal to 1
     collection.updateOne({ username: user }
         , { $inc: { wins : 1 } }, function(err, result) {
             assert.equal(err, null);
@@ -40,7 +39,6 @@ function increaseUserWins(user,callback){
 
 function increaseUserlosses(user,callback){
     const collection = db.collection(usersCollection);
-    // Update document where a is 2, set b equal to 1
     collection.updateOne({ username: user }
         , { $inc: { losses : 1 } }, function(err, result) {
             assert.equal(err, null);
@@ -76,13 +74,23 @@ function insertMatch(fight, callback) {
         });
 }
 
+function removeMatch(matchId,callback) {
+    const collection = db.collection(matchesCollection);
+    collection.deleteOne({_id:matchId}),(function(err) {
+        assert.equal(err, null);
+        console.log("deleted a match");
+        callback();
+    });
+}
+
+
 
 
 
 
 //-----------------------------------------
-
-
+//-----Connect to database-----------------
+//-----------------------------------------
 const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
 
