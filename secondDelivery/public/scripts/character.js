@@ -109,6 +109,32 @@ function EMPTY() {}
 function createCharacter(CharTypeConstructor, name, hp, attack, cd1,cd2, description){
 	return new CharTypeConstructor(name,hp,attack,cd1,cd2, description);
 }
+
+
+// BUGG : if characters get saved with any modifiers, they get lost when loaded with this method, its better to simulate whole fight each time it gets loades, but its 2am and i have more things to do
+function createCharacter_v2(attributes){
+	let tmp;
+	switch (attributes.name) {
+		case "ranger" :
+			tmp = new Ranger();
+			break;
+		case "mage" :
+			tmp = new Mage();
+			break;
+		case "fighter":
+			tmp = new Fighter();
+			break;
+		case "a":
+			tmp = new Fighter();
+			break;
+		default: console.log("couldn't find charachter type" + attributes.name);
+	}
+	tmp.name = attributes.name;
+	tmp.hp = attributes.hp;
+	tmp.attack = attributes.attack;
+	tmp.description = attributes.description;
+	return  tmp;
+}
 //--------------------------------------------------------------
 //-----------------------CHARACTERS-----------------------------
 //--------------------------------------------------------------
@@ -195,13 +221,16 @@ class Fight{
 }
 //////MODULE EXPORTS/////////
 
-// exports.Fighter = Fighter;
-// exports.Mage = Mage;
-// exports.Ranger = Ranger;
-// exports.Fight = Fight;
-// exports.createCharacter = createCharacter;
+ exports.Fighter = Fighter;
+ exports.Mage = Mage;
+ exports.Ranger = Ranger;
+ exports.Fight = Fight;
+ exports.createCharacter = createCharacter;
+ exports.createCharacter_v2 = createCharacter_v2;
+
 // createCharacter(CharTypeConstructor, name, hp, attack, cd1,cd2)
 //						¨^               ^
 //	class constructor of its character//rest of stats from json file
-//
-//
+
+
+
