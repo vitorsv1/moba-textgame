@@ -107,19 +107,19 @@ function removeMatch(user,callback) {
 }
 
 
-function updateMatch(user,fight, callback){
+function updateMatch(user,command, callback){
     console.log("updating match for: " + user);
     const collection = db.collection(usersCollection);
-    const matchColletcion  = db.collection(matchesCollectionName);
+    const matchColletcion = db.collection(matchesCollectionName);
     collection.findOne({username:user}, { projection: {match:1} }, function(err, response) {
         assert.equal(err, null);
             assert.notEqual(response,  null);
             console.log("found a match id for the user: ");
-            console.log(response);
-            matchColletcion.updateOne({ "_id" : Mongo.ObjectID(response.match)}, { $set: {match: fight}}, function (err, response) {
+            //console.log(response);
+            matchColletcion.updateOne({ "_id" : Mongo.ObjectID(response.match)}, { $push: {history: command}}, function (err, response) {
                 assert.equal(err, null);
                 console.log("match by id updated, response:");
-                console.log(response);
+                //console.log(response);
                 assert.equal(1, response.result.n);
                 if(callback) callback(response);
             });
@@ -134,7 +134,7 @@ function getFight(user, callback) {
         assert.equal(err, null);
         assert.notEqual(response,  null);
         console.log("found a match id for the user: ");
-        console.log(response);
+        //console.log(response);
         matchColletcion.findOne({ "_id" : Mongo.ObjectID(response.match)}, function (err, response) {
             assert.equal(err, null);
             console.log("found a game :)");

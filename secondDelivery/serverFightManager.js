@@ -18,15 +18,17 @@ function createFight(user1,user2, char1, char2, callback){
     return fightObj;
 }
 
-function updateFight(user, fight) {
-    database.updateMatch(user,fight,()=>{console.log("Fight update completed :)")});
+function updateFight(user, combat, command) {
+    database.updateMatch(user,command,()=>{console.log("Fight update completed :)")});
+    combat.progress(command);
 }
 
 function getFight(user, callback){
     database.getFight(user,(res) =>{
         tmpChar1 = fight.createCharacter_v2(res.match.char1);
         tmpChar2 = fight.createCharacter_v2(res.match.char2);
-        tmpFight = new fight.Fight(tmpChar1,tmpChar2,res.match.turn);
+        tmpFight = new fight.Fight(tmpChar1,tmpChar2);
+        res.history.forEach(command => {tmpFight.progress(command);});
         callback(tmpFight);
     });
 }
@@ -53,9 +55,14 @@ function test(){
     tmpChar1 = new fight.Ranger('ranger', 100, 10,1,1,'things');
     tmpChar2 = new fight.Ranger('ranger', 100, 10,1,1,'things');
 
-    //tmpFight = createFight('Pau', 'Vitor',tmpChar1,tmpChar2);
-    //tmpFight.progress('Attack');
-    //setTimeout(()=>{updateFight('Pau', tmpFight)}, 1000);
+    tmpFight = createFight('Pau', 'Vitor',tmpChar1,tmpChar2);
+    setTimeout(()=>{
+        updateFight('Pau', tmpFight, 'Attack');
+        updateFight('Vitor', tmpFight, 'Attack');
+        updateFight('Pau', tmpFight, 'Attack');
+        updateFight('Vitor', tmpFight, 'Attack');
+        updateFight('Pau', tmpFight, 'Attack');
+        setTimeout(()=>{getFight('Pau',(res)=>{console.log(res.getFightStats());});},1000);}, 1000);
     // updateFight('Pau', tmpFight);
     // ----------
     //getFight('Pau', (res)=>{

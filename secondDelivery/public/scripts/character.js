@@ -111,7 +111,6 @@ function createCharacter(CharTypeConstructor, name, hp, attack, cd1,cd2, descrip
 }
 
 
-// BUGG : if characters get saved with any modifiers, they get lost when loaded with this method, its better to simulate whole fight each time it gets loades, but its 2am and i have more things to do
 function createCharacter_v2(attributes){
 	let tmp;
 	switch (attributes.name) {
