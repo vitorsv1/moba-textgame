@@ -51,7 +51,7 @@ function finishFight(winner, losser) {
 
 
 
-function test(){
+/*function test(){
     tmpChar1 = new fight.Ranger('ranger', 100, 10,1,1,'things');
     tmpChar2 = new fight.Ranger('ranger', 100, 10,1,1,'things');
 
