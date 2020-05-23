@@ -1,5 +1,6 @@
 $(document).ready(()=>{
     let email,pass;
+    window.localStorage.setItem('username', '');
     $('#submit').click(function(){
         myEmail = $('#email').val();
         myPass = $('#password').val();
@@ -13,7 +14,8 @@ $(document).ready(()=>{
                     //alert( data );
                     console.log('post recives something');
                     if(data==='EverythingOK'){
-                    window.location.href="/";
+                        window.localStorage.setItem('username', myEmail);
+                        window.location.href="/";
                     }
         });
 

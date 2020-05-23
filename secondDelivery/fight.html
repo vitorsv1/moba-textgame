@@ -63,9 +63,10 @@
             }
 
             var charName = $.urlParam('char1');
+            var username = window.localStorage.getItem('username');
 
             // Find some way to pass the ROOM here 
-            socket.emit('joinRoom', {charName, room});
+            socket.emit('joinRoom', {username, charName});
 
             $.getJSON('./characterStats.json', function (data) {
                 if(window.localStorage.getItem('trophy')==null) window.localStorage.setItem('trophy', '0');

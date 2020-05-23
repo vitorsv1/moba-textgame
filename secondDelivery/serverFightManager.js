@@ -1,8 +1,5 @@
 const fight = require('./public/scripts/character');
 const database = require('./databaseManagment');
-//const io = require('socket.io')
-
-
 
 function createFight(user1,user2, char1, char2, callback){
     fightObj = new fight.Fight(char1,char2);
@@ -39,7 +36,6 @@ function finishFight(winner, losser) {
     database.finnishGameUser(winner);
     database.finnishGameUser(losser);
     database.removeMatch(winner);
-
 }
 
 

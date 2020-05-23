@@ -6,7 +6,7 @@ var app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const session = require('express-session');
-//const database = require('./databaseManagment');
+const database = require('./databaseManagment');
 const bodyParser = require('body-parser');
 const {
 	userJoin,
@@ -56,16 +56,8 @@ app.use(function(req, res, next) {
 app.use(express.static(path.join(__dirname, 'public')));
 
 //------pages that dont require beeing  logged in ---------------
-//check session
- app.use(function(req, res, next) {
-	 if(req.method == 'GET')console.log("user sending request = " + req.session.username);
-	 if(req.method == 'GET' && !req.session.username) res.redirect('/login');
-	 else next();
- });
 
-
-//---------------  GET ---------------
-//login page
+//login page !!!!!IT HAS TO BE  BEFORE CHECKING THAT THE SESSION EXISTS!!!!!!!!
 app.get('/login',(req,res)=>{
 	if(req.session.username) res.redirect('/');
 	console.log( 'serving a login');
@@ -76,6 +68,17 @@ app.get('/register',(req,res)=>{
 	console.log( 'serving a register page');
 	res.sendFile(path.join(__dirname, 'register.html'));
 });
+
+//check session
+ app.use(function(req, res, next) {
+	 if(req.method == 'GET')console.log("user sending request = " + req.session.username);
+	 if(req.method == 'GET' && !req.session.username) res.redirect('/login');
+	 else next();
+ });
+
+
+//---------------  GET ---------------
+
 
 // standard routing
 app.get('/',  function(req, res, next) {
@@ -94,7 +97,7 @@ app.get('/fight',  function(req, res, next) {
 });
 
 app.get('/characterStats.json',  function(req, res, next) {
-	console.log( 'serving a fight');
+	console.log( 'serving a character Stats');
 	res.sendFile(path.join(__dirname, 'characterStats.json'));
 });
 
@@ -105,6 +108,15 @@ app.get('/logout',(req,res)=>{
 		} else {
 			res.redirect('/login');
 		}
+	});
+});
+
+app.get('/userStats', (req,res) =>{
+	database.findUser(req.session.username, (user) =>{
+		data = JSON.stringify({wins: user[0].wins, losses:user[0].losses, trophy:user[0].wins});
+		console.log("sending user stats:");
+		console.log(data);
+		res.send(data);
 	});
 });
 
@@ -120,7 +132,15 @@ app.post('/login',(req,res)=>{
 	function checkUser(users){
 		console.log("Checking valid user?")
 		if(users[0] && users[0].username == sess.username && users[0].password == sess.pswd) {res.send('EverythingOK')}
-		else res.send('You are a failure');
+		else {
+			res.send('You are a failure');
+			req.session.destroy(function(err){
+				if(err){
+					console.log(err);
+				}
+			});
+
+		}
 	}
 	database.findUser(sess.username, checkUser);
 });
@@ -143,10 +163,11 @@ app.post('/register',(req,res)=>{
 
 
 // ----------------- SOCKETS -----------------
+
 io.on('connection', (socket) =>{
 	console.log(`The user ${socket.id} is connected'`);
 
-	socket.on('joinRoom', ({username, room}) => {
+	socket.on('joinRoom', ({username, character}) => {
 		const numberUser = getRoomUsers(room);
 		if (numberUser < 2) {
 			const user = userJoin(socket.id, username, room);

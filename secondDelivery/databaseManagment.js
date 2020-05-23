@@ -138,7 +138,7 @@ function getFight(user, callback) {
         matchColletcion.findOne({ "_id" : Mongo.ObjectID(response.match)}, function (err, response) {
             assert.equal(err, null);
             console.log("found a game :)");
-            console.log(response);
+            //console.log(response);
             callback(response);
         });
     });

@@ -1,4 +1,4 @@
-const users = [];
+database = require('./databaseManagment');
 
 // Join user to chat
 function userJoin(id, username, room) {
@@ -11,7 +11,7 @@ function userJoin(id, username, room) {
 
 // Get current user
 function getCurrentUser(id) {
-  return users.find(user => user.id === id);
+  return users.find(user => user.id === id);0
 }
 
 // User leaves chat

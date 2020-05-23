@@ -219,17 +219,12 @@ class Fight{
 
 }
 //////MODULE EXPORTS/////////
-
- exports.Fighter = Fighter;
- exports.Mage = Mage;
- exports.Ranger = Ranger;
- exports.Fight = Fight;
- exports.createCharacter = createCharacter;
- exports.createCharacter_v2 = createCharacter_v2;
-
-// createCharacter(CharTypeConstructor, name, hp, attack, cd1,cd2)
-//						¨^               ^
-//	class constructor of its character//rest of stats from json file
-
-
+try {
+	exports.Fighter = Fighter;
+	exports.Mage = Mage;
+	exports.Ranger = Ranger;
+	exports.Fight = Fight;
+	exports.createCharacter = createCharacter;
+	exports.createCharacter_v2 = createCharacter_v2;
+}catch (e) {}// so clients dont complain
 
