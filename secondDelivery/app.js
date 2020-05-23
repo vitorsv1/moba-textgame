@@ -6,8 +6,12 @@ var app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const session = require('express-session');
-const database = require('./databaseManagment');
 const bodyParser = require('body-parser');
+
+const database = require('./databaseManagment');
+const fight = require('./serverFightManager');
+
+
 const {
 	userJoin,
 	getCurrentUser,
@@ -163,12 +167,36 @@ app.post('/register',(req,res)=>{
 
 
 // ----------------- SOCKETS -----------------
-
+rooms = new Array(); // -->{roomId, user1{username, char}, user2{username, char}}
 io.on('connection', (socket) =>{
 	console.log(`The user ${socket.id} is connected'`);
 
-	socket.on('joinRoom', ({username, character}) => {
-		const numberUser = getRoomUsers(room);
+	socket.on('joinRoom', (message) => {
+		console.log("joining a room");
+		contentObj = JSON.parse(message);
+		username = contentObj.user;
+		char = contentObj.char;
+		joinedRoom = rooms.find((present) =>{ return present.user2 == null});
+		if(joinedRoom == undefined){ //createand join a new room if  all are full
+			console.log("No rooms available, creating a new room");
+			joinedRoom = {roomId: rooms.length, user1: { username: username, char: char}, user2 : null};
+			rooms.push(joinedRoom);
+			socket.join(joinedRoom.roomId);
+		}
+		else { //join an available room --> roomis full --> start a game
+			joinedRoom.user2 = {username :username, char: char};
+			socket.join(joinedRoom.roomId);
+			console.log("Room full, starting game");
+
+			game = fight.createFight(joinedRoom.user1.username, joinedRoom.user2.username, joinedRoom.user1.char, joinedRoom.user1.char);
+			io.to(joinedRoom.roomId).send('start game', JSON.stringify({char1:joinedRoom.user1.char, char2 : joinedRoom.user1.char }));
+			socket.emit('your turn');
+		}
+
+		console.log("joined a room");
+
+
+		/*const numberUser = getRoomUsers(room);
 		if (numberUser < 2) {
 			const user = userJoin(socket.id, username, room);
 
@@ -180,10 +208,47 @@ io.on('connection', (socket) =>{
 		}
 		else {
 			socket.emit('roomFull', 'The fight has already begin here!');
-		}
-		
-	})
+		}*/
+	});
 
+	socket.on('new command',(message) =>{
+		messageObj = JSON.parse(message);
+		username = messageObj.username;
+		command = messageObj.command;
+		room = rooms.find((present) =>{ return present.user1 == username || present.user2 == username});
+		io.to(room.roomId).emit('send command', command); // send comand to clients
+		//update fight on database
+		fight.getFight(username, (combat) => {
+			try {
+				fight.updateFight(username, combat, command);
+			}catch (e) {
+				let winner, losser;
+				switch (e) {
+					case 'player 1 won':
+						winner = room.user1.username;
+						losser = room.user2.username;
+						break;
+					case 'player 2 won':
+						winner = room.user2.username;
+						losser = room.user1.username;
+						break;
+					default: throw  e;
+				}
+				fight.finishFight(winner,losser);
+				io.to(room.roomId).emit('game finished');
+			}
+
+		})
+
+	});
+
+	socket.on('new message', (message) => {
+		messageObj = JSON.parse(message);
+		username = messageObj.username;
+		room = rooms.find((present) =>{ return present.user1 == username || present.user2 == username});
+		io.to(room.roomId).emit('send command2', message); // send message to clients
+	})
+	/*
 	socket.on('charSelect', name => {
 		//SEND TO THE DATABASE WHAT CHAR SELECTED
 		charSelected = name;
@@ -199,13 +264,15 @@ io.on('connection', (socket) =>{
 		// Manage the data to send to database
 		socket.emit('receivedMessage', {charSelected, data});
 	})
+	*/
 
 	socket.on('disconnect', () => {
-		const user = userLeave(socket.id);
+		//const user = userLeave(socket.id);
 
-		if(user) {
+		/*if(user) {
 			io.to(user.room).emit('message', `The user ${username} has left the game'`);
-		}
+		}*/
+		console.log("userr disconected");
 
 	})
 })

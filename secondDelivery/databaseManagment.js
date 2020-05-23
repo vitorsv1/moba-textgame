@@ -65,7 +65,7 @@ function attachFight(user, fightId, matchfirst,callback){
     collection.updateOne({ username: user }
         , { $set: { match: fightId, matchChar1:matchfirst } }, function(err, result) {
             assert.equal(err, null);
-            assert.equal(1, result.result.n);
+            //assert.equal(1, result.result.n);
             console.log("user match attached");
             if(callback) callback(result);
         });

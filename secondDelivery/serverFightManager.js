@@ -1,8 +1,24 @@
 const fight = require('./public/scripts/character');
 const database = require('./databaseManagment');
+const fs = require('fs');
+
+function getCharfromJsonObj(char,stats) {
+    switch (char) {
+        case 'archer' || 'ranger': return stats.character1; break;
+        case 'warrior' || 'fighter': return stats.character3; break;
+        case 'mage': return stats.character2; break;
+    }
+}
+
 
 function createFight(user1,user2, char1, char2, callback){
-    fightObj = new fight.Fight(char1,char2);
+    charStats = JSON.parse(fs.readFileSync('./characterStats.json', 'utf8'));
+    selectedChar = getCharfromJsonObj(char1,charStats);
+    playerChar1 = fight.createCharacter_v2(selectedChar);
+    selectedChar = getCharfromJsonObj(char2,charStats);
+    playerChar2 = fight.createCharacter_v2(selectedChar);
+
+    fightObj = new fight.Fight(playerChar1,playerChar2);
     database.insertMatch(fightObj, (res) =>{
         console.log('created new "fight" with id: ' + res.insertedId);
         database.attachFight(user1,res.insertedId,true,()=>{
@@ -40,7 +56,10 @@ function finishFight(winner, losser) {
 
 
 
-
+exports.createFight = createFight;
+exports.updateFight = updateFight
+exports.getFight = getFight
+exports.finishFight = finishFight;
 
 
 
