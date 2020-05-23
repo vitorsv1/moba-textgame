@@ -1,16 +1,23 @@
-
-const http = require('http');
 const url = require('url');
 const path = require('path');
 const fs = require('fs');
 const express = require('express');
+var app = express();
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
 const session = require('express-session');
-const database = require('./databaseManagment');
+//const database = require('./databaseManagment');
 const bodyParser = require('body-parser');
+const {
+	userJoin,
+	getCurrentUser,
+	userLeave,
+	getRoomUsers
+} = require('./users')
+const charSelected = null;
 
 const root = __dirname;
 
-var app = express();
 
 //user session and login
 app.use(session({
@@ -21,6 +28,7 @@ app.use(session({
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
+//File server
 const serverStatic = (response,file)=>{
 	const fileToServe = path.join(root,file);
 	const stream = fs.createReadStream(fileToServe);
@@ -37,8 +45,6 @@ const serverStatic = (response,file)=>{
 	});
 }
 
-//routing
-// ======================================
 
 //print info on requests
 app.use(function(req, res, next) {
@@ -50,6 +56,15 @@ app.use(function(req, res, next) {
 app.use(express.static(path.join(__dirname, 'public')));
 
 //------pages that dont require beeing  logged in ---------------
+//check session
+ app.use(function(req, res, next) {
+	 if(req.method == 'GET')console.log("user sending request = " + req.session.username);
+	 if(req.method == 'GET' && !req.session.username) res.redirect('/login');
+	 else next();
+ });
+
+
+//---------------  GET ---------------
 //login page
 app.get('/login',(req,res)=>{
 	if(req.session.username) res.redirect('/');
@@ -61,14 +76,6 @@ app.get('/register',(req,res)=>{
 	console.log( 'serving a register page');
 	res.sendFile(path.join(__dirname, 'register.html'));
 });
-
-
-//check session
- app.use(function(req, res, next) {
- 	if(req.method == 'GET')console.log("user sending request = " + req.session.username);
- 	if(req.method == 'GET' && !req.session.username) res.redirect('/login');
- 	else next();
- });
 
 // standard routing
 app.get('/',  function(req, res, next) {
@@ -91,7 +98,18 @@ app.get('/characterStats.json',  function(req, res, next) {
 	res.sendFile(path.join(__dirname, 'characterStats.json'));
 });
 
+app.get('/logout',(req,res)=>{
+	req.session.destroy(function(err){
+		if(err){
+			console.log(err);
+		} else {
+			res.redirect('/login');
+		}
+	});
+});
 
+
+//----------------- POST -----------------
 app.post('/login',(req,res)=>{
 	let sess=req.session;
 	sess.username=req.body.email;
@@ -123,16 +141,55 @@ app.post('/register',(req,res)=>{
 	database.findUser(sess.username, checkUser);
 });
 
-app.get('/logout',(req,res)=>{
-	req.session.destroy(function(err){
-		if(err){
-			console.log(err);
-		} else {
-			res.redirect('/login');
+
+// ----------------- SOCKETS -----------------
+io.on('connection', (socket) =>{
+	console.log(`The user ${socket.id} is connected'`);
+
+	socket.on('joinRoom', ({username, room}) => {
+		const numberUser = getRoomUsers(room);
+		if (numberUser < 2) {
+			const user = userJoin(socket.id, username, room);
+
+			socket.join(user.room);
+
+			socket.broadcast
+				.to(user.room)
+				.emit('message', `The user ${username} is connected'`);
 		}
-	});
+		else {
+			socket.emit('roomFull', 'The fight has already begin here!');
+		}
+		
+	})
+
+	socket.on('charSelect', name => {
+		//SEND TO THE DATABASE WHAT CHAR SELECTED
+		charSelected = name;
+		console.log(name);
+		console.log(charSelected);
+	})
+
+	socket.on('receivedMessage', data => {		
+		
+	})
+
+	socket.on('sendMessage', data => {
+		// Manage the data to send to database
+		socket.emit('receivedMessage', {charSelected, data});
+	})
+
+	socket.on('disconnect', () => {
+		const user = userLeave(socket.id);
+
+		if(user) {
+			io.to(user.room).emit('message', `The user ${username} has left the game'`);
+		}
+
+	})
+})
+
+//--------------- PORT ---------------
+var server = http.listen(3000, () => {
+	console.log('server is running on port', server.address().port);
 });
-
-
-
-module.exports = app;

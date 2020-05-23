@@ -117,8 +117,8 @@ function chatEventHandler(){
             }
             else alert(e);
         }
-        chat.send_msg(game.getUserCharName(), game.getUserStats());
-        chat.receive_msg(game.getEnemyCharName(),game.getEnemyStats());
+        //chat.send_msg(game.getUserCharName(), game.getUserStats());
+        //chat.receive_msg(game.getEnemyCharName(),game.getEnemyStats());
         console.log(game.getFightStats());
     }}
 
@@ -138,6 +138,7 @@ function box_key_pressing() {
         input_box.blur();
     }
 }
+
 
 
 console.log("DONE LOADING");

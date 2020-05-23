@@ -40,6 +40,9 @@
                         <button id="send-btn" class="btn btn-secondary btn-lg" type="button">Confirm</button>
                     </span>
                 </div>
+                <div class="messages">
+
+                </div>
             </div>
         </div>
         <!-- SCRIPTS -->
@@ -48,5 +51,73 @@
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
         <script src="/scripts/character.js" ></script>
         <script src="/scripts/chat-control.js" ></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            var socket = io('http://localhost:3000');
+
+            $.urlParam = function (name) {
+                var results = new RegExp('[\?&]' + name + '=([^&#]*)')
+                                .exec(window.location.search);
+
+                return (results !== null) ? results[1] || 0 : false;
+            }
+
+            var charName = $.urlParam('char1');
+
+            // Find some way to pass the ROOM here 
+            socket.emit('joinRoom', {charName, room});
+
+            $.getJSON('./characterStats.json', function (data) {
+                if(window.localStorage.getItem('trophy')==null) window.localStorage.setItem('trophy', '0');
+                trophy = parseInt(window.localStorage.getItem('trophy'));
+                ranger = new createCharacter(Ranger, data.character1.name, data.character1.hp + trophy*3,data.character1.attack + trophy*2, data.character1.ability1CD, data.character1.ability2CD,data.character1.description);
+                mage = new createCharacter(Mage, data.character2.name, data.character2.hp + trophy*3,data.character2.attack + trophy*2, data.character2.ability1CD, data.character2.ability2CD,data.character2.description);
+                fighter = new createCharacter(Fighter, data.character3.name, data.character3.hp + trophy*3,data.character3.attack + trophy*2, data.character3.ability1CD, data.character3.ability2CD,data.character3.description);
+                const urlParams = new URLSearchParams(window.location.search);
+                let char1;
+                switch (urlParams.get('char1')) {
+                    case 'archer': char1 = ranger; break;
+                    case 'warrior': char1 = fighter; break;
+                    case 'mage': char1 = mage; break;
+                    default: throw "wrong char1 parameter: "+ urlParams;
+                }
+                game = new Fight(char1,fighter);
+
+                console.log(char1.describe());
+            });
+
+            function renderMessage(messageObject, side){
+
+                $('.messages').append(`<div class="card">
+                                            <div class="card-body">
+                                                <h6 class="card-subtitle mb-2 text-muted text-${side}">${messageObject.char}</h6>
+                                                <p class="card-text float-${side}">${messageObject.message}p>
+                                            </div>
+                                        </div>`)
+            }
+
+
+            socket.on('receivedMessage', (messageObject) => {
+                renderMessage(messageObject, 'left');
+            });
+
+            $('#send-btn').click(function(event){
+                event.preventDefault();
+
+                var message = $('#input-box').val();
+
+                if (message.length){
+                    var messageObject = {
+                        id: socket.id,
+                        char: charName,
+                        message: message
+                    };
+
+                    renderMessage(messageObject, 'right');
+
+                    socket.emit('sendMessage', messageObject);
+                }
+            })
+        </script>
     </body>
 </html>
