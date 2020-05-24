@@ -80,7 +80,7 @@ const matchesCollectionName = 'matches';
 //new Matches
 function insertMatch(fight, callback) {
     const collection = db.collection(matchesCollectionName);
-    collection.insertOne({match: fight}
+    collection.insertOne({match: fight, history: []}
         , function(err, response) {
             assert.equal(err, null);
             assert.equal(1, response.result.n);
@@ -129,7 +129,6 @@ function updateMatch(user,command, callback){
 function getFight(user, callback) {
     const collection = db.collection(usersCollection);
     const matchColletcion  = db.collection(matchesCollectionName);
-    //collection.find({username:user}, { projection: {match:1} }).toArray(function(err, response) {
     collection.findOne({username:user}, { projection: {match:1} }, function(err, response) {
         assert.equal(err, null);
         assert.notEqual(response,  null);
@@ -138,7 +137,7 @@ function getFight(user, callback) {
         matchColletcion.findOne({ "_id" : Mongo.ObjectID(response.match)}, function (err, response) {
             assert.equal(err, null);
             console.log("found a game :)");
-            //console.log(response);
+            console.log(response);
             callback(response);
         });
     });

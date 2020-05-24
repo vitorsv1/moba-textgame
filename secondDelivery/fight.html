@@ -49,7 +49,7 @@
         <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
         <script src="https://unpkg.com/@popperjs/core@2"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
-        <script src="/scripts/character.js" ></script>
+       <!-- <script src="/scripts/character.js" ></script> -->
         <!--<script src="/scripts/chat-control.js" ></script>-->
         <script src="/socket.io/socket.io.js"></script>
         <script>
@@ -64,13 +64,12 @@
 
                 return (results !== null) ? results[1] || 0 : false;
             }
-
+            var turn = false;
             var charName = $.urlParam('char1');
             var user_name = window.localStorage.getItem('username');
 
-            // Find some way to pass the ROOM here 
             socket.emit('joinRoom', JSON.stringify({username : user_name, char: charName}));
-
+/*
             $.getJSON('./characterStats.json', function (data) {
                 if(window.localStorage.getItem('trophy')==null) window.localStorage.setItem('trophy', '0');
                 trophy = parseInt(window.localStorage.getItem('trophy'));
@@ -89,7 +88,7 @@
 
                 console.log(char1.describe());
             });
-
+*/
             function renderMessage(messageObject, side){
 
                 $('.messages').append(`<div class="card">
@@ -112,6 +111,7 @@
             });
 
             socket.on('your turn', ()=>{
+                turn = true;
                 var messageObject = {
                         id: socket.id,
                         charname: "Server",
@@ -121,6 +121,7 @@
             });
 
             socket.on('send command', (messageObject)=>{
+                turn = !turn;
                 var messageObject = JSON.parse(messageObject);
                 console.log(messageObject);
                 if(messageObject.id == socket.id){
@@ -141,7 +142,7 @@
                 renderMessage(msg,'left');
             });
 
-            socket.on('send command2', (messageObject) => {
+            /*socket.on('send command2', (messageObject) => {
                 if(messageObject.id == socket.id){
                     renderMessage(messageObject, 'right');
                 }
@@ -149,12 +150,13 @@
                     renderMessage(messageObject, 'left');
                 }
             });
+             */
 
             $('#send-btn').click(function(event){
                 event.preventDefault();
 
-                var message = $('#input-box').val();
-                var commands = ["Attack", "Ability 1", "Ability 2"];
+                let message = $('#input-box').val();
+                let commands = ["Attack", "Ability 1", "Ability 2"];
                 
                 if (message.length){
                     var messageObject = {
@@ -167,7 +169,8 @@
                     renderMessage(messageObject, 'right');
 
                     if(commands.includes(message)){
-                        socket.emit('new command', JSON.stringify(messageObject));
+                        if(turn) socket.emit('new command', JSON.stringify(messageObject));
+                        else alert('Wait for your turn');
                     }
                     else{
                         socket.emit('new message', JSON.stringify(messageObject));

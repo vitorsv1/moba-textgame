@@ -160,7 +160,9 @@ app.post('/register',(req,res)=>{
 
 
 // ----------------- SOCKETS -----------------
-rooms = new Array(); // -->{roomId, user1{username, char}, user2{username, char}}
+rooms = new Array(); // -->{roomId, user1{socketid,username, char}, user2{socketid,username, char}}
+roomNextId = 0;
+
 io.on('connection', (socket) =>{
 	console.log(`The user ${socket.id} is connected'`);
 	
@@ -169,10 +171,19 @@ io.on('connection', (socket) =>{
 		contentObj = JSON.parse(message);
 		username = contentObj.username;
 		char = contentObj.char;
-		joinedRoom = rooms.find((present) =>{ return present.user2 == null});
+		//chaeck if its a reconnection
+		room = rooms.find((present) =>present.user1.username == username || present.user2.username == username);
+		if(room){
+			console.log("Reconnecting user");
+			socket.join(room.id);
+			return;
+		}
+
+		joinedRoom = rooms.find((present) =>{ return present.user2.username == null});
 		if(joinedRoom == undefined){ //createand join a new room if  all are full
 			console.log("No rooms available, creating a new room");
-			joinedRoom = {roomId: rooms.length, user1: {userid: socket.id, username: username, char: char}, user2 : null};
+			joinedRoom = {roomId: roomNextId, user1: {userid: socket.id, username: username, char: char}, user2 : {username : null}};
+			++roomNextId;
 			rooms.push(joinedRoom);
 			socket.join(joinedRoom.roomId);
 		}
@@ -185,7 +196,6 @@ io.on('connection', (socket) =>{
 			io.to(joinedRoom.roomId).send('start game'); //JSON.stringify({char1:joinedRoom.user1.char, char2 : joinedRoom.user1.char }
 			socket.emit('your turn');
 		}
-
 		console.log("joined a room");
 	});
 
@@ -194,26 +204,29 @@ io.on('connection', (socket) =>{
 		username = messageObj.username;
 		command = messageObj.message;
 		room = rooms.find((present) =>present.user1.username === username || present.user2.username === username);
-		io.to(room.roomId).emit('send command', message); // send comand to clients
 		//update fight on database
 		fight.getFight(username, (combat) => {
 			try {
 				fight.updateFight(username, combat, command);
+				messageObj.message += "<br>" + combat.getFightStats();
+				io.to(room.roomId).emit('send command', JSON.stringify(messageObj)); // send fight status to clients
 			}catch (e) {
 				let winner, losser;
 				switch (e) {
 					case 'player 1 won':
 						winner = room.user1.username;
 						losser = room.user2.username;
+						fight.finishFight(winner,losser);
+						io.to(room.roomId).emit('game finished', winner);
 						break;
 					case 'player 2 won':
 						winner = room.user2.username;
 						losser = room.user1.username;
+						fight.finishFight(winner,losser);
+						io.to(room.roomId).emit('game finished', winner);
 						break;
-					default: throw  e;
+					default: io.to(room.roomId).emit('send command', e); // send fight error to clients
 				}
-				fight.finishFight(winner,losser);
-				io.to(room.roomId).emit('game finished', winner);
 			}
 
 		})
@@ -235,13 +248,16 @@ io.on('connection', (socket) =>{
 		index = rooms.findIndex(function(item, i){
 			return item.user1.userid === val || item.user2.userid === val 
 		});
-
+		if(index == -1){console.log("disconnected from non existing roomm"); return;}
 		if(rooms[index].user1.userid === val){
-			rooms[index].user1 = null;
+			rooms[index].user1 = 'null';
 		}
 		else if(rooms[index].user2.userid === val){
-			rooms[index].user2 = null;
+			rooms[index].user2 = 'null';
 		}
+
+		// delete room when its empty
+		if(rooms[index].user1.userid === 'null' && rooms[index].user2.userid == 'null') rooms.splice(index);
 
 		// if(rooms[index].user1 == null && rooms[index].user2 == null){
 		// 	delete rooms[index];

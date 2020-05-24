@@ -198,7 +198,7 @@ class Fight{
 	}
 
 	getFightStats(){
-		return this.char1.getStats() + "\n" + this.char2.getStats();
+		return "player 1: " + this.char1.getStats() + "<br> player 2: " + this.char2.getStats();
 	}
 
 	getUserCharName(){
