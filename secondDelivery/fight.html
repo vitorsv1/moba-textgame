@@ -66,10 +66,10 @@
             }
 
             var charName = $.urlParam('char1');
-            var username = window.localStorage.getItem('username');
+            var user_name = window.localStorage.getItem('username');
 
             // Find some way to pass the ROOM here 
-            socket.emit('joinRoom', JSON.stringify({username : username, char: charName}));
+            socket.emit('joinRoom', JSON.stringify({username : user_name, char: charName}));
 
             $.getJSON('./characterStats.json', function (data) {
                 if(window.localStorage.getItem('trophy')==null) window.localStorage.setItem('trophy', '0');
@@ -102,6 +102,15 @@
                 $('.msg-group').scrollTop($('.msg-group')[0].scrollHeight);
             }
 
+            socket.on('start game', ()=>{
+                var messageObject = {
+                        id: socket.id,
+                        charname: "Server",
+                        message: "The game has been started"
+                    };
+                renderMessage(messageObject,'left');
+            });
+
             socket.on('your turn', ()=>{
                 var messageObject = {
                         id: socket.id,
@@ -112,6 +121,8 @@
             });
 
             socket.on('send command', (messageObject)=>{
+                var messageObject = JSON.parse(messageObject);
+                console.log(messageObject);
                 if(messageObject.id == socket.id){
                     renderMessage(messageObject, 'right');
                 }
@@ -148,7 +159,7 @@
                 if (message.length){
                     var messageObject = {
                         id: socket.id,
-                        username: username,
+                        username: user_name,
                         charname: charName,
                         message: message
                     };
@@ -156,10 +167,10 @@
                     renderMessage(messageObject, 'right');
 
                     if(commands.includes(message)){
-                        socket.emit('new comand', messageObject);
+                        socket.emit('new command', JSON.stringify(messageObject));
                     }
                     else{
-                        socket.emit('new message', messageObject);
+                        socket.emit('new message', JSON.stringify(messageObject));
                     }
                 }
             })
