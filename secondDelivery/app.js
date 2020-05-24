@@ -167,9 +167,8 @@ io.on('connection', (socket) =>{
 	socket.on('joinRoom', (message) => {
 		console.log("joining a room");
 		contentObj = JSON.parse(message);
-		username = contentObj.user;
+		username = contentObj.username;
 		char = contentObj.char;
-		user_Name = username;
 		joinedRoom = rooms.find((present) =>{ return present.user2 == null});
 		if(joinedRoom == undefined){ //createand join a new room if  all are full
 			console.log("No rooms available, creating a new room");
@@ -183,7 +182,7 @@ io.on('connection', (socket) =>{
 			console.log("Room full, starting game");
 
 			game = fight.createFight(joinedRoom.user1.username, joinedRoom.user2.username, joinedRoom.user1.char, joinedRoom.user1.char);
-			io.to(joinedRoom.roomId).send('start game', JSON.stringify({char1:joinedRoom.user1.char, char2 : joinedRoom.user1.char }));
+			io.to(joinedRoom.roomId).send('start game'); //JSON.stringify({char1:joinedRoom.user1.char, char2 : joinedRoom.user1.char }
 			socket.emit('your turn');
 		}
 
@@ -191,10 +190,10 @@ io.on('connection', (socket) =>{
 	});
 
 	socket.on('new command',(message) =>{
-		messageObj = message;
+		messageObj = JSON.parse(message);
 		username = messageObj.username;
 		command = messageObj.message;
-		room = rooms.find((present) =>{ return present.user1 == username || present.user2 == username});
+		room = rooms.find((present) =>present.user1.username === username || present.user2.username === username);
 		io.to(room.roomId).emit('send command', message); // send comand to clients
 		//update fight on database
 		fight.getFight(username, (combat) => {
@@ -214,7 +213,7 @@ io.on('connection', (socket) =>{
 					default: throw  e;
 				}
 				fight.finishFight(winner,losser);
-				io.to(room.roomId).emit('game finished', username);
+				io.to(room.roomId).emit('game finished', winner);
 			}
 
 		})
@@ -223,11 +222,11 @@ io.on('connection', (socket) =>{
 
 	socket.on('new message', (message) => {
 		console.log('NEW MESSAGE');
-		messageObj = message;
+		messageObj = JSON.parse(message);
 		username = messageObj.username;
-		room = rooms.find((present) =>{ console.log(present); return present.user1 == username || present.user2 == username});
+		room = rooms.find((present) => present.user1.username === username || present.user2.username === username);
 		console.log(room);
-		io.to(room.roomId).emit('send command2', message); // send message to clients
+		io.to(room.roomId).emit('send command2', messageObj); // send message to clients
 	})
 	
 	// THERE IS A BUG WITH user1 = null AND user2 = null THE ALGORIT CAN'T PLACE ANY USER IN THE LIST
@@ -237,10 +236,10 @@ io.on('connection', (socket) =>{
 			return item.user1.userid === val || item.user2.userid === val 
 		});
 
-		if(rooms[index].user1.userid == val){
+		if(rooms[index].user1.userid === val){
 			rooms[index].user1 = null;
 		}
-		else if(rooms[index].user2.userid == val){
+		else if(rooms[index].user2.userid === val){
 			rooms[index].user2 = null;
 		}
 
