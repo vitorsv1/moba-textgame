@@ -50,10 +50,13 @@
         <script src="https://unpkg.com/@popperjs/core@2"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
         <script src="/scripts/character.js" ></script>
-        <script src="/scripts/chat-control.js" ></script>
+        <!--<script src="/scripts/chat-control.js" ></script>-->
         <script src="/socket.io/socket.io.js"></script>
         <script>
             var socket = io('http://localhost:3000');
+
+            var audio = document.getElementById("audio");
+            audio.volume = 0.1;
 
             $.urlParam = function (name) {
                 var results = new RegExp('[\?&]' + name + '=([^&#]*)')
@@ -91,32 +94,73 @@
 
                 $('.messages').append(`<div class="card">
                                             <div class="card-body">
-                                                <h6 class="card-subtitle mb-2 text-muted text-${side}">${messageObject.char}</h6>
-                                                <p class="card-text float-${side}">${messageObject.message}p>
+                                                <h6 class="card-subtitle mb-2 text-muted text-${side}">${messageObject.charname}</h6>
+                                                <p class="card-text float-${side}">${messageObject.message}</p>
                                             </div>
-                                        </div>`)
+                                        </div>`);
+                
+                $('.msg-group').scrollTop($('.msg-group')[0].scrollHeight);
             }
 
+            socket.on('your turn', ()=>{
+                var messageObject = {
+                        id: socket.id,
+                        charname: "Server",
+                        message: "You start the fight"
+                    };
+                renderMessage(messageObject,'left');
+            });
 
-            socket.on('receivedMessage', (messageObject) => {
-                renderMessage(messageObject, 'left');
+            socket.on('send command', (messageObject)=>{
+                if(messageObject.id == socket.id){
+                    renderMessage(messageObject, 'right');
+                }
+                else{
+                    renderMessage(messageObject, 'left');
+                }
+            });
+
+            socket.on('game finished', (message)=>{
+                var message = "The game finished, " + message + "won!!";
+                var msg = {
+                        id: socket.id,
+                        charname: "Server",
+                        message: message
+                    };
+                renderMessage(msg,'left');
+            });
+
+            socket.on('send command2', (messageObject) => {
+                if(messageObject.id == socket.id){
+                    renderMessage(messageObject, 'right');
+                }
+                else{
+                    renderMessage(messageObject, 'left');
+                }
             });
 
             $('#send-btn').click(function(event){
                 event.preventDefault();
 
                 var message = $('#input-box').val();
-
+                var commands = ["Attack", "Ability 1", "Ability 2"];
+                
                 if (message.length){
                     var messageObject = {
                         id: socket.id,
-                        char: charName,
+                        username: username,
+                        charname: charName,
                         message: message
                     };
 
                     renderMessage(messageObject, 'right');
 
-                    socket.emit('sendMessage', messageObject);
+                    if(commands.includes(message)){
+                        socket.emit('new comand', messageObject);
+                    }
+                    else{
+                        socket.emit('new message', messageObject);
+                    }
                 }
             })
         </script>

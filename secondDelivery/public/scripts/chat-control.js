@@ -30,7 +30,7 @@ class chat_control {
 
     //SCROLL
     scroll_to_bottom() {
-        this.msg_list.scrollTop(this.msg_list[0].scrollHeight);
+        $('.msg-group').scrollTop($('.msg-group')[0].scrollHeight);
     }
 }
 

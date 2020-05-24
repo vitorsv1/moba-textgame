@@ -7,7 +7,7 @@ const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const session = require('express-session');
 const bodyParser = require('body-parser');
-
+const http2 = require('http');
 const database = require('./databaseManagment');
 const fight = require('./serverFightManager');
 
@@ -170,21 +170,22 @@ app.post('/register',(req,res)=>{
 rooms = new Array(); // -->{roomId, user1{username, char}, user2{username, char}}
 io.on('connection', (socket) =>{
 	console.log(`The user ${socket.id} is connected'`);
-
+	
 	socket.on('joinRoom', (message) => {
 		console.log("joining a room");
 		contentObj = JSON.parse(message);
 		username = contentObj.user;
 		char = contentObj.char;
+		user_Name = username;
 		joinedRoom = rooms.find((present) =>{ return present.user2 == null});
 		if(joinedRoom == undefined){ //createand join a new room if  all are full
 			console.log("No rooms available, creating a new room");
-			joinedRoom = {roomId: rooms.length, user1: { username: username, char: char}, user2 : null};
+			joinedRoom = {roomId: rooms.length, user1: {userid: socket.id, username: username, char: char}, user2 : null};
 			rooms.push(joinedRoom);
 			socket.join(joinedRoom.roomId);
 		}
 		else { //join an available room --> roomis full --> start a game
-			joinedRoom.user2 = {username :username, char: char};
+			joinedRoom.user2 = {userid: socket.id, username :username, char: char};
 			socket.join(joinedRoom.roomId);
 			console.log("Room full, starting game");
 
@@ -194,29 +195,14 @@ io.on('connection', (socket) =>{
 		}
 
 		console.log("joined a room");
-
-
-		/*const numberUser = getRoomUsers(room);
-		if (numberUser < 2) {
-			const user = userJoin(socket.id, username, room);
-
-			socket.join(user.room);
-
-			socket.broadcast
-				.to(user.room)
-				.emit('message', `The user ${username} is connected'`);
-		}
-		else {
-			socket.emit('roomFull', 'The fight has already begin here!');
-		}*/
 	});
 
 	socket.on('new command',(message) =>{
-		messageObj = JSON.parse(message);
+		messageObj = message;
 		username = messageObj.username;
-		command = messageObj.command;
+		command = messageObj.message;
 		room = rooms.find((present) =>{ return present.user1 == username || present.user2 == username});
-		io.to(room.roomId).emit('send command', command); // send comand to clients
+		io.to(room.roomId).emit('send command', message); // send comand to clients
 		//update fight on database
 		fight.getFight(username, (combat) => {
 			try {
@@ -235,7 +221,7 @@ io.on('connection', (socket) =>{
 					default: throw  e;
 				}
 				fight.finishFight(winner,losser);
-				io.to(room.roomId).emit('game finished');
+				io.to(room.roomId).emit('game finished', username);
 			}
 
 		})
@@ -243,37 +229,32 @@ io.on('connection', (socket) =>{
 	});
 
 	socket.on('new message', (message) => {
-		messageObj = JSON.parse(message);
+		console.log('NEW MESSAGE');
+		messageObj = message;
 		username = messageObj.username;
-		room = rooms.find((present) =>{ return present.user1 == username || present.user2 == username});
+		room = rooms.find((present) =>{ console.log(present); return present.user1 == username || present.user2 == username});
+		console.log(room);
 		io.to(room.roomId).emit('send command2', message); // send message to clients
 	})
-	/*
-	socket.on('charSelect', name => {
-		//SEND TO THE DATABASE WHAT CHAR SELECTED
-		charSelected = name;
-		console.log(name);
-		console.log(charSelected);
-	})
-
-	socket.on('receivedMessage', data => {		
-		
-	})
-
-	socket.on('sendMessage', data => {
-		// Manage the data to send to database
-		socket.emit('receivedMessage', {charSelected, data});
-	})
-	*/
-
+	
+	// THERE IS A BUG WITH user1 = null AND user2 = null THE ALGORIT CAN'T PLACE ANY USER IN THE LIST
 	socket.on('disconnect', () => {
-		//const user = userLeave(socket.id);
+		var val = socket.id;
+		index = rooms.findIndex(function(item, i){
+			return item.user1.userid === val || item.user2.userid === val 
+		});
 
-		/*if(user) {
-			io.to(user.room).emit('message', `The user ${username} has left the game'`);
-		}*/
-		console.log("userr disconected");
+		if(rooms[index].user1.userid == val){
+			rooms[index].user1 = null;
+		}
+		else if(rooms[index].user2.userid == val){
+			rooms[index].user2 = null;
+		}
 
+		// if(rooms[index].user1 == null && rooms[index].user2 == null){
+		// 	delete rooms[index];
+		// }
+		console.log(JSON.stringify(rooms));		
 	})
 })
 
@@ -281,3 +262,9 @@ io.on('connection', (socket) =>{
 var server = http.listen(3000, () => {
 	console.log('server is running on port', server.address().port);
 });
+
+// TEST FOR SEEM ROOMS
+http2.createServer(function (req, res) {
+  res.write(JSON.stringify(rooms)); 
+  res.end(); 
+}).listen(3001); 
