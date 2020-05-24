@@ -11,13 +11,6 @@ const http2 = require('http');
 const database = require('./databaseManagment');
 const fight = require('./serverFightManager');
 
-
-const {
-	userJoin,
-	getCurrentUser,
-	userLeave,
-	getRoomUsers
-} = require('./users')
 const charSelected = null;
 
 const root = __dirname;
@@ -134,7 +127,7 @@ app.post('/login',(req,res)=>{
 
 	// validate the user and password with mongoDB
 	function checkUser(users){
-		console.log("Checking valid user?")
+		console.log("Checking valid user?");
 		if(users[0] && users[0].username == sess.username && users[0].password == sess.pswd) {res.send('EverythingOK')}
 		else {
 			res.send('You are a failure');
