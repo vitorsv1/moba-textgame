@@ -15,7 +15,7 @@ $(document).ready(()=>{
                     console.log('post recives something');
                     if(data==='EverythingOK'){
                         window.localStorage.setItem('username', myEmail);
-                        window.location.href="/";
+                        window.location.replace('/');
                     }
         });
 

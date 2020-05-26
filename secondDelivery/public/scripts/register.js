@@ -11,12 +11,14 @@ $(document).ready(()=>{
         myEmail = $('#email').val();
         myPass = password;
 
-        $.post("http://localhost:3000/register",
+        $.post("/register",
                 {email:myEmail,pass:myPass},
                 (data)=>{
-                    if(data === ''){
-                        window.location.replace("http://localhost:3000");
+                    if(data === 'everythingOK'){
+                        localStorage.setItem('username', myEmail);
+                        window.location.replace("/");
                     }
+                    else alert("not a vailid user");
         });
 
     });
