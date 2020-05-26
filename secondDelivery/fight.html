@@ -18,6 +18,9 @@
                 <a class="nav-item nav-link" href="./">Home <span class="sr-only">(current)</span></a>
                 <a class="nav-item nav-link" href="./char-select">Char Select</a>
                 <a class="nav-item nav-link active" href="./fight">Fight</a>
+                <button id="logout-btn" class="btn btn-primary btn-sm">
+                  <span class="glyphicon glyphicon-log-out"></span> Log out
+                </button>
               </div>
             </div>
         </nav>
@@ -49,134 +52,7 @@
         <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
         <script src="https://unpkg.com/@popperjs/core@2"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
-       <!-- <script src="/scripts/character.js" ></script> -->
-        <!--<script src="/scripts/chat-control.js" ></script>-->
         <script src="/socket.io/socket.io.js"></script>
-        <script>
-            var socket = io('http://localhost:3000');
-
-            var audio = document.getElementById("audio");
-            audio.volume = 0.1;
-
-            $.urlParam = function (name) {
-                var results = new RegExp('[\?&]' + name + '=([^&#]*)')
-                                .exec(window.location.search);
-
-                return (results !== null) ? results[1] || 0 : false;
-            }
-            var turn = false;
-            var charName = $.urlParam('char1');
-            var user_name = window.localStorage.getItem('username');
-
-            socket.emit('joinRoom', JSON.stringify({username : user_name, char: charName}));
-/*
-            $.getJSON('./characterStats.json', function (data) {
-                if(window.localStorage.getItem('trophy')==null) window.localStorage.setItem('trophy', '0');
-                trophy = parseInt(window.localStorage.getItem('trophy'));
-                ranger = new createCharacter(Ranger, data.character1.name, data.character1.hp + trophy*3,data.character1.attack + trophy*2, data.character1.ability1CD, data.character1.ability2CD,data.character1.description);
-                mage = new createCharacter(Mage, data.character2.name, data.character2.hp + trophy*3,data.character2.attack + trophy*2, data.character2.ability1CD, data.character2.ability2CD,data.character2.description);
-                fighter = new createCharacter(Fighter, data.character3.name, data.character3.hp + trophy*3,data.character3.attack + trophy*2, data.character3.ability1CD, data.character3.ability2CD,data.character3.description);
-                const urlParams = new URLSearchParams(window.location.search);
-                let char1;
-                switch (urlParams.get('char1')) {
-                    case 'archer': char1 = ranger; break;
-                    case 'warrior': char1 = fighter; break;
-                    case 'mage': char1 = mage; break;
-                    default: throw "wrong char1 parameter: "+ urlParams;
-                }
-                game = new Fight(char1,fighter);
-
-                console.log(char1.describe());
-            });
-*/
-            function renderMessage(messageObject, side){
-
-                $('.messages').append(`<div class="card">
-                                            <div class="card-body">
-                                                <h6 class="card-subtitle mb-2 text-muted text-${side}">${messageObject.charname}</h6>
-                                                <p class="card-text float-${side}">${messageObject.message}</p>
-                                            </div>
-                                        </div>`);
-                
-                $('.msg-group').scrollTop($('.msg-group')[0].scrollHeight);
-            }
-
-            socket.on('start game', ()=>{
-                var messageObject = {
-                        id: socket.id,
-                        charname: "Server",
-                        message: "The game has been started"
-                    };
-                renderMessage(messageObject,'left');
-            });
-
-            socket.on('your turn', ()=>{
-                turn = true;
-                var messageObject = {
-                        id: socket.id,
-                        charname: "Server",
-                        message: "You start the fight"
-                    };
-                renderMessage(messageObject,'left');
-            });
-
-            socket.on('send command', (messageObject)=>{
-                turn = !turn;
-                var messageObject = JSON.parse(messageObject);
-                console.log(messageObject);
-                if(messageObject.id == socket.id){
-                    renderMessage(messageObject, 'right');
-                }
-                else{
-                    renderMessage(messageObject, 'left');
-                }
-            });
-
-            socket.on('game finished', (message)=>{
-                var message = "The game finished, " + message + "won!!";
-                var msg = {
-                        id: socket.id,
-                        charname: "Server",
-                        message: message
-                    };
-                renderMessage(msg,'left');
-            });
-
-            /*socket.on('send command2', (messageObject) => {
-                if(messageObject.id == socket.id){
-                    renderMessage(messageObject, 'right');
-                }
-                else{
-                    renderMessage(messageObject, 'left');
-                }
-            });
-             */
-
-            $('#send-btn').click(function(event){
-                event.preventDefault();
-
-                let message = $('#input-box').val();
-                let commands = ["Attack", "Ability 1", "Ability 2"];
-                
-                if (message.length){
-                    var messageObject = {
-                        id: socket.id,
-                        username: user_name,
-                        charname: charName,
-                        message: message
-                    };
-
-                    renderMessage(messageObject, 'right');
-
-                    if(commands.includes(message)){
-                        if(turn) socket.emit('new command', JSON.stringify(messageObject));
-                        else alert('Wait for your turn');
-                    }
-                    else{
-                        socket.emit('new message', JSON.stringify(messageObject));
-                    }
-                }
-            })
-        </script>
+        <script>src="/scripts/fight.js"</script>
     </body>
 </html>

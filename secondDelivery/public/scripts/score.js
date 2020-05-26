@@ -20,7 +20,12 @@ $.getJSON('/userStats',(data) => {
 
 });
 
-
+$('#logout-btn').click(function(event){
+    $.get("/logout", function(data, status){
+        alert("You've logged out");
+        window.location.replace("http://localhost:3000");
+    });
+});
 
 /*
 if(window.localStorage.getItem('wins') == null) window.localStorage.setItem('wins', '0');
