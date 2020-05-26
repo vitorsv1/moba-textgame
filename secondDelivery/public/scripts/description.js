@@ -3,11 +3,7 @@ console.log('Description');
 var audio = document.getElementById("audio");
 audio.volume = 0.1;
 
-
 $.getJSON('./characterStats.json', function (data) {
-    // ranger = new createCharacter(Ranger, data.character1.name, data.character1.hp,data.character1.attack, data.character1.ability1CD, data.character1.ability2CD,data.character1.description);
-    // mage = new createCharacter(Mage, data.character2.name, data.character2.hp,data.character2.attack, data.character2.ability1CD, data.character2.ability2CD,data.character2.description);
-    // fighter = new createCharacter(Fighter, data.character3.name, data.character3.hp,data.character3.attack, data.character3.ability1CD, data.character3.ability2CD,data.character3.description);
     
     console.log(document.getElementById('archer-desc'));
 

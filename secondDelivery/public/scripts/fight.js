@@ -13,19 +13,21 @@ var turn = false;
 var charName = $.urlParam('char1');
 var user_name = window.localStorage.getItem('username');
 
-socket.emit('joinRoom', JSON.stringify({username : user_name, char: charName}));
 
 function renderMessage(messageObject, side){
-
+    
     $('.messages').append(`<div class="card">
-                                <div class="card-body">
-                                    <h6 class="card-subtitle mb-2 text-muted text-${side}">${messageObject.charname}</h6>
-                                    <p class="card-text float-${side}">${messageObject.message}</p>
-                                </div>
-                            </div>`);
+    <div class="card-body">
+    <h6 class="card-subtitle mb-2 text-muted text-${side}">${messageObject.charname}</h6>
+    <p class="card-text float-${side}">${messageObject.message}</p>
+    </div>
+    </div>`);
     
     $('.msg-group').scrollTop($('.msg-group')[0].scrollHeight);
 }
+
+//--------------- SOCKET PART ---------------//
+socket.emit('joinRoom', JSON.stringify({username : user_name, char: charName}));
 
 socket.on('start game', ()=>{
     var messageObject = {
