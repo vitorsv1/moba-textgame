@@ -194,7 +194,8 @@ io.on('connection', (socket) =>{
 
 			game = fight.createFight(joinedRoom.user1.username, joinedRoom.user2.username, joinedRoom.user1.char, joinedRoom.user1.char);
 			io.to(joinedRoom.roomId).send('start game'); //JSON.stringify({char1:joinedRoom.user1.char, char2 : joinedRoom.user1.char }
-			socket.emit('your turn');
+			//socket.emit('your turn');
+			io.to(joinedRoom.user1.userid).emit('your turn');
 		}
 		console.log("joined a room");
 	});
