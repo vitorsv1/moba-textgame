@@ -15,7 +15,7 @@ $(document).ready(()=>{
         $.post("http://localhost:3000/register",
                 {email:myEmail,pass:myPass},
                 (data)=>{
-                    if(data==='everythingOK'){
+                    if(data===''){
                         window.location.href="/";
                     }
         });
