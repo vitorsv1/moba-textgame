@@ -22,3 +22,13 @@ $(document).ready(()=>{
     });
 });
 
+function validateForm(){
+    var email = $("#email").val();
+    var pass = $("#password").val();
+
+    if(email == null || email == "", pass == null || pass == ""){
+        alert("The fields are empty!");
+        return false;
+    }
+
+}
