@@ -152,7 +152,7 @@ app.post('/register',(req,res)=>{
 		if(users[0])console.log('tried to register an existing user');
 		else database.insertUser(sess.username, sess.pswd, function (response){
 			if(response.result.ok)res.send('everythingOK');
-			else console.log("error on inserting user :(");
+			else res.send('you tried a bad user, you are a failure');
 		});
 	}
 	database.findUser(sess.username, checkUser);
