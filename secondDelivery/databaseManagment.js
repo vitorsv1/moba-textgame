@@ -8,7 +8,6 @@ function findUser(user,callback) {
     const collection = db.collection(usersCollection);
     collection.find({username:user}).toArray(function(err, users) {
         assert.equal(err, null);
-        console.log("Found the following users with same username: '" + user + "'");
         console.log(users);
         callback(users);
     });
@@ -65,7 +64,6 @@ function attachFight(user, fightId, matchfirst,callback){
     collection.updateOne({ username: user }
         , { $set: { match: fightId, matchChar1:matchfirst } }, function(err, result) {
             assert.equal(err, null);
-            //assert.equal(1, result.result.n);
             console.log("user match attached");
             if(callback) callback(result);
         });
@@ -96,7 +94,6 @@ function removeMatch(user,callback) {
     collection.findOne({username:user}, { projection: {match:1} }, function(err, response) {
         assert.equal(err, null);
         assert.notEqual(response,  null);
-        console.log("found a match id for the user: ");
         console.log(response);
         matchColletcion.deleteOne({ "_id" : Mongo.ObjectID(response.match)}, function (err) {
             assert.equal(err, null);
@@ -114,12 +111,10 @@ function updateMatch(user,command, callback){
     collection.findOne({username:user}, { projection: {match:1} }, function(err, response) {
         assert.equal(err, null);
             assert.notEqual(response,  null);
-            console.log("found a match id for the user: ");
             //console.log(response);
             matchColletcion.updateOne({ "_id" : Mongo.ObjectID(response.match)}, { $push: {history: command}}, function (err, response) {
                 assert.equal(err, null);
                 console.log("match by id updated, response:");
-                //console.log(response);
                 assert.equal(1, response.result.n);
                 if(callback) callback(response);
             });
@@ -136,8 +131,6 @@ function getFight(user, callback) {
         //console.log(response);
         matchColletcion.findOne({ "_id" : Mongo.ObjectID(response.match)}, function (err, response) {
             assert.equal(err, null);
-            console.log("found a game :)");
-            console.log(response);
             callback(response);
         });
     });

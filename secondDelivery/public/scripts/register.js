@@ -15,9 +15,10 @@ $(document).ready(()=>{
         $.post("http://localhost:3000/register",
                 {email:myEmail,pass:myPass},
                 (data)=>{
-                    if(data===''){
+                    if(data==='everythingOK'){
                         window.location.href="/";
                     }
+                    else {alert("User already exists");}
         });
 
     });
