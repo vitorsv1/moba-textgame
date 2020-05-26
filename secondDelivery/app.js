@@ -149,10 +149,13 @@ app.post('/register',(req,res)=>{
 	console.log('User submitted this data:',sess);
 	// make sure user doesnt exist already, should send an error msg but nope
 	function checkUser(users){
-		if(users[0])console.log('tried to register an existing user');
+		if(users[0]){
+			console.log('tried to register an existing user');
+			res.send('you tried a bad user, you are a failure');
+		}
 		else database.insertUser(sess.username, sess.pswd, function (response){
 			if(response.result.ok)res.send('everythingOK');
-			else res.send('you tried a bad user, you are a failure');
+			else console.log('error adding new user');
 		});
 	}
 	database.findUser(sess.username, checkUser);
